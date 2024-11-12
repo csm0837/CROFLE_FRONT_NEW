@@ -99,7 +99,7 @@ export default {
 
       if (user) {
         localStorage.setItem('isLoggedIn', 'true');
-        localSstorage.setItem('userType', user.type);
+        localStorage.setItem('userType', user.type);
         localStorage.setItem('userName', user.name);
         localStorage.setItem('userEmail', user.email);
 
