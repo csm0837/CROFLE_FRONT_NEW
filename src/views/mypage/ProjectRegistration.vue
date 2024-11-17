@@ -1,5 +1,5 @@
 <!-- src/views/mypage/ProjectRegistration.vue -->
- 
+
 <!-- Template 영역 -->
 <template>
   <div class="project-registration-page">
@@ -9,8 +9,8 @@
     <div class="pricing-section" v-if="step === 1">
       <h3>요금제 선택</h3>
       <div class="pricing-plans">
-        <div 
-          v-for="plan in pricingPlans" 
+        <div
+          v-for="plan in pricingPlans"
           :key="plan.id"
           class="pricing-card"
           :class="{ selected: selectedPlan === plan.id }"
@@ -19,32 +19,37 @@
           <h4>{{ plan.name }}</h4>
           <div class="plan-price">{{ formatPrice(plan.price) }}</div>
           <ul class="plan-features">
-            <li v-for="feature in plan.features" :key="feature">{{ feature }}</li>
+            <li v-for="feature in plan.features" :key="feature">
+              {{ feature }}
+            </li>
           </ul>
-          <button class="select-plan-btn" :class="{ selected: selectedPlan === plan.id }">
-            {{ selectedPlan === plan.id ? '선택됨' : '선택하기' }}
+          <button
+            class="select-plan-btn"
+            :class="{ selected: selectedPlan === plan.id }"
+          >
+            {{ selectedPlan === plan.id ? "선택됨" : "선택하기" }}
           </button>
         </div>
       </div>
-      <button 
-        class="next-step-btn" 
-        :disabled="!selectedPlan"
-        @click="step = 2"
-      >
+      <button class="next-step-btn" :disabled="!selectedPlan" @click="step = 2">
         다음 단계
       </button>
     </div>
 
     <!-- 프로젝트 정보 입력 폼 -->
-    <form v-if="step === 2" @submit.prevent="submitProject" class="project-form">
+    <form
+      v-if="step === 2"
+      @submit.prevent="submitProject"
+      class="project-form"
+    >
       <div class="form-section">
         <h3>기본 정보</h3>
         <div class="input-group">
           <label for="name">프로젝트 이름</label>
-          <input 
-            type="text" 
-            id="name" 
-            v-model="project.name" 
+          <input
+            type="text"
+            id="name"
+            v-model="project.name"
             placeholder="프로젝트 이름을 입력하세요"
             required
           />
@@ -54,7 +59,11 @@
           <label for="category">카테고리</label>
           <select id="category" v-model="project.category" required>
             <option value="">카테고리 선택</option>
-            <option v-for="category in categories" :key="category" :value="category">
+            <option
+              v-for="category in categories"
+              :key="category"
+              :value="category"
+            >
               {{ category }}
             </option>
           </select>
@@ -62,9 +71,9 @@
 
         <div class="input-group">
           <label for="description">상품 설명</label>
-          <textarea 
-            id="description" 
-            v-model="project.description" 
+          <textarea
+            id="description"
+            v-model="project.description"
             placeholder="상품에 대한 상세한 설명을 입력하세요"
             required
           ></textarea>
@@ -72,10 +81,10 @@
 
         <div class="input-group">
           <label for="price">판매가</label>
-          <input 
-            type="number" 
-            id="price" 
-            v-model="project.price" 
+          <input
+            type="number"
+            id="price"
+            v-model="project.price"
             min="0"
             placeholder="상품의 판매 가격을 입력하세요"
             required
@@ -84,11 +93,11 @@
 
         <div class="input-group">
           <label for="discount">할인율 (%)</label>
-          <input 
-            type="number" 
-            id="discount" 
-            v-model="project.discount" 
-            min="0" 
+          <input
+            type="number"
+            id="discount"
+            v-model="project.discount"
+            min="0"
             max="100"
             placeholder="라이브 방송 시 적용할 할인율을 입력하세요"
           />
@@ -96,10 +105,10 @@
 
         <div class="input-group">
           <label for="targetAmount">목표 금액</label>
-          <input 
-            type="number" 
-            id="targetAmount" 
-            v-model="project.targetAmount" 
+          <input
+            type="number"
+            id="targetAmount"
+            v-model="project.targetAmount"
             min="0"
             placeholder="펀딩 목표 금액을 입력하세요"
             required
@@ -111,27 +120,31 @@
         <h3>이미지 등록</h3>
         <div class="image-upload-group">
           <label>썸네일 이미지</label>
-          <input 
-            type="file" 
-            @change="handleThumbnailUpload" 
+          <input
+            type="file"
+            @change="handleThumbnailUpload"
             accept="image/*"
             required
           />
-          <img v-if="thumbnailPreview" :src="thumbnailPreview" class="image-preview" />
+          <img
+            v-if="thumbnailPreview"
+            :src="thumbnailPreview"
+            class="image-preview"
+          />
         </div>
 
         <div class="image-upload-group">
           <label>추가 이미지 (최대 5개)</label>
-          <input 
-            type="file" 
-            @change="handleImagesUpload" 
-            accept="image/*" 
+          <input
+            type="file"
+            @change="handleImagesUpload"
+            accept="image/*"
             multiple
           />
           <div class="image-previews">
-            <img 
-              v-for="(preview, index) in imagePreviews" 
-              :key="index" 
+            <img
+              v-for="(preview, index) in imagePreviews"
+              :key="index"
               :src="preview"
               class="image-preview"
             />
@@ -140,13 +153,17 @@
 
         <div class="image-upload-group">
           <label>내용 이미지</label>
-          <input 
-            type="file" 
-            @change="handleContentImageUpload" 
+          <input
+            type="file"
+            @change="handleContentImageUpload"
             accept="image/*"
             required
           />
-          <img v-if="contentImagePreview" :src="contentImagePreview" class="image-preview" />
+          <img
+            v-if="contentImagePreview"
+            :src="contentImagePreview"
+            class="image-preview"
+          />
         </div>
       </div>
 
@@ -154,9 +171,9 @@
         <h3>필수 등록 서류</h3>
         <div class="document-upload-group">
           <label>프로젝트 기획서</label>
-          <input 
-            type="file" 
-            @change="handleDocumentUpload('projectPlan')" 
+          <input
+            type="file"
+            @change="(e) => handleDocumentUpload('projectPlan', e)"
             accept=".pdf,.doc,.docx"
             required
           />
@@ -167,10 +184,11 @@
 
         <div class="document-upload-group">
           <label>개발 기획서</label>
-          <input 
-            type="file" 
-            @change="handleDocumentUpload('developmentPlan')" 
+          <input
+            type="file"
+            @change="handleDocumentUpload('developmentPlan')"
             accept=".pdf,.doc,.docx"
+            id="fileInput"
             required
           />
           <small v-if="uploadedDocuments.developmentPlan">
@@ -180,9 +198,9 @@
 
         <div class="document-upload-group">
           <label>개인정보 이용동의서</label>
-          <input 
-            type="file" 
-            @change="handleDocumentUpload('agreement')" 
+          <input
+            type="file"
+            @change="handleDocumentUpload('agreement')"
             accept=".pdf,.doc,.docx"
             required
           />
@@ -193,9 +211,9 @@
 
         <div class="document-upload-group">
           <label>추가 서류</label>
-          <input 
-            type="file" 
-            @change="handleDocumentUpload('additional')" 
+          <input
+            type="file"
+            @change="handleDocumentUpload('additional')"
             accept=".pdf,.doc,.docx"
           />
           <small v-if="uploadedDocuments.additional">
@@ -208,9 +226,7 @@
         <button type="button" class="cancel-btn" @click="cancelRegistration">
           취소
         </button>
-        <button type="submit" class="submit-btn">
-          검토받기
-        </button>
+        <button type="submit" class="submit-btn">검토받기</button>
       </div>
     </form>
 
@@ -232,9 +248,7 @@
           <template v-else>
             <p class="failure">반려되었습니다.</p>
             <p class="reject-reason">{{ rejectReason }}</p>
-            <button @click="closeModal" class="close-btn">
-              확인
-            </button>
+            <button @click="closeModal" class="close-btn">확인</button>
           </template>
         </div>
       </div>
@@ -257,66 +271,69 @@
 </template>
 
 <script>
+
+
+
 export default {
-  name: 'ProjectRegistration',
+  name: "ProjectRegistration",
   data() {
     return {
       step: 1,
       selectedPlan: null,
       pricingPlans: [
         {
-          id: 'A',
-          name: '베이직 플랜',
+          id: "A",
+          name: "베이직 플랜",
           price: 100000,
           features: [
-            '기본 프로젝트 등록',
-            '1회 라이브 방송',
-            '기본 통계 제공',
-            '채팅 기능 제공'
-          ]
+            "기본 프로젝트 등록",
+            "1회 라이브 방송",
+            "기본 통계 제공",
+            "채팅 기능 제공",
+          ],
         },
         {
-          id: 'B',
-          name: '스탠다드 플랜',
+          id: "B",
+          name: "스탠다드 플랜",
           price: 300000,
           features: [
-            '프로젝트 우선 검토',
-            '3회 라이브 방송',
-            '상세 통계 제공',
-            '채팅 & 알림톡 기능',
-            '실시간 문의응대'
-          ]
+            "프로젝트 우선 검토",
+            "3회 라이브 방송",
+            "상세 통계 제공",
+            "채팅 & 알림톡 기능",
+            "실시간 문의응대",
+          ],
         },
         {
-          id: 'C',
-          name: '프리미엄 플랜',
+          id: "C",
+          name: "프리미엄 플랜",
           price: 500000,
           features: [
-            'VIP 프로젝트 등록',
-            '무제한 라이브 방송',
-            '프리미엄 통계 제공',
-            '모든 서비스 제공',
-            '전담 매니저 배정',
-            '우선 기술지원'
-          ]
-        }
+            "VIP 프로젝트 등록",
+            "무제한 라이브 방송",
+            "프리미엄 통계 제공",
+            "모든 서비스 제공",
+            "전담 매니저 배정",
+            "우선 기술지원",
+          ],
+        },
       ],
       project: {
-        name: '',
-        category: '',
-        description: '',
-        price: '',
+        name: "",
+        category: "",
+        description: "",
+        price: "",
         discount: 0,
-        targetAmount: '',
+        targetAmount: "",
       },
       categories: [
-        '생활 가전',
-        '주방 가전',
-        '스마트 가전',
-        'DIY',
-        '엔터테인먼트',
-        '웨어러블',
-        '주변 기기'
+        "생활 가전",
+        "주방 가전",
+        "스마트 가전",
+        "DIY",
+        "엔터테인먼트",
+        "웨어러블",
+        "주변 기기",
       ],
       thumbnailPreview: null,
       imagePreviews: [],
@@ -325,28 +342,28 @@ export default {
         projectPlan: null,
         developmentPlan: null,
         agreement: null,
-        additional: null
+        additional: null,
       },
       showReviewModal: false,
       showPaymentCompleteModal: false,
       reviewProgress: 0,
-      reviewMessage: '프로젝트를 검토중입니다...',
+      reviewMessage: "프로젝트를 검토중입니다...",
       reviewComplete: false,
       reviewSuccess: false,
-      rejectReason: '',
+      rejectReason: "",
       reviewMessages: [
-        '기본 정보를 확인하고 있습니다...',
-        '프로젝트 기획서를 검토중입니다...',
-        '개발 기획서를 분석하고 있습니다...',
-        '이미지 적합성을 검사중입니다...',
-        '최종 검토를 진행중입니다...'
+        "기본 정보를 확인하고 있습니다...",
+        "프로젝트 기획서를 검토중입니다...",
+        "개발 기획서를 분석하고 있습니다...",
+        "이미지 적합성을 검사중입니다...",
+        "최종 검토를 진행중입니다...",
       ],
-      currentMessageIndex: 0
+      currentMessageIndex: 0,
     };
   },
   methods: {
     formatPrice(price) {
-      return new Intl.NumberFormat('ko-KR').format(price) + '원';
+      return new Intl.NumberFormat("ko-KR").format(price) + "원";
     },
     selectPlan(planId) {
       this.selectedPlan = planId;
@@ -359,7 +376,7 @@ export default {
     },
     handleImagesUpload(event) {
       const files = Array.from(event.target.files).slice(0, 5);
-      this.imagePreviews = files.map(file => URL.createObjectURL(file));
+      this.imagePreviews = files.map((file) => URL.createObjectURL(file));
     },
     handleContentImageUpload(event) {
       const file = event.target.files[0];
@@ -367,14 +384,58 @@ export default {
         this.contentImagePreview = URL.createObjectURL(file);
       }
     },
+
+
     handleDocumentUpload(type, event) {
-      if (event.target.files[0]) {
-        this.uploadedDocuments[type] = event.target.files[0];
-      }
-    },
+  const file = event.target.files[0];
+  if (file) {
+    // 화면에 보여줄 파일 정보 저장
+    this.uploadedDocuments[type] = file;
+    
+    // 파일 확장자 확인
+    const extension = file.name.split('.').pop().toLowerCase();
+    
+    const reader = new FileReader();
+    
+    if (extension === 'txt') {
+      // 텍스트 파일인 경우
+      reader.onload = () => {
+        const decoder = new TextDecoder('utf-8');
+        const content = decoder.decode(new Uint8Array(reader.result));
+        console.log('Text file content:', content);
+      };
+      reader.readAsArrayBuffer(file);
+    } 
+    else if (['doc', 'docx'].includes(extension)) {
+      // Word 문서인 경우
+      reader.onload = async () => {
+        try {
+          const arrayBuffer = reader.result;
+          const result = await window.mammoth.extractRawText({ arrayBuffer });
+          console.log('Word document content:', result.value);
+        } catch (error) {
+          console.error('Error reading Word document:', error);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+    else {
+      // 다른 타입의 파일
+      console.log('File info:', {
+        name: file.name,
+        type: file.type,
+        size: `${(file.size / 1024).toFixed(2)} KB`
+      });
+    }
+  }
+},
     cancelRegistration() {
-      if (confirm('프로젝트 등록을 취소하시겠습니까?\n입력된 내용은 저장되지 않습니다.')) {
-        this.$router.push('/mypage/funding-status');
+      if (
+        confirm(
+          "프로젝트 등록을 취소하시겠습니까?\n입력된 내용은 저장되지 않습니다."
+        )
+      ) {
+        this.$router.push("/mypage/funding-status");
       }
     },
     submitProject() {
@@ -385,10 +446,15 @@ export default {
       this.startReview();
     },
     validateForm() {
-      if (!this.project.name || !this.project.category || 
-          !this.project.description || !this.project.price || 
-          !this.project.targetAmount || !this.thumbnailPreview) {
-        alert('모든 필수 항목을 입력해주세요.');
+      if (
+        !this.project.name ||
+        !this.project.category ||
+        !this.project.description ||
+        !this.project.price ||
+        !this.project.targetAmount ||
+        !this.thumbnailPreview
+      ) {
+        alert("모든 필수 항목을 입력해주세요.");
         return false;
       }
       return true;
@@ -396,16 +462,19 @@ export default {
     startReview() {
       let progress = 0;
       this.currentMessageIndex = 0;
-      
+
       const interval = setInterval(() => {
         progress += 1;
         this.reviewProgress = progress;
-        
-        if (progress % 20 === 0 && this.currentMessageIndex < this.reviewMessages.length) {
+
+        if (
+          progress % 20 === 0 &&
+          this.currentMessageIndex < this.reviewMessages.length
+        ) {
           this.reviewMessage = this.reviewMessages[this.currentMessageIndex];
           this.currentMessageIndex++;
         }
-        
+
         if (progress >= 100) {
           clearInterval(interval);
           this.completeReview();
@@ -414,12 +483,12 @@ export default {
     },
     completeReview() {
       this.reviewComplete = true;
-      
+
       this.reviewSuccess = Math.random() > 0.3;
-      
+
       if (!this.reviewSuccess) {
         const reasons = [
-          '프로젝트 기획서의 내용이 부족합니다. 보완 후 다시 신청해주세요.',
+          "프로젝트 기획서의 내용이 부족합니다. 보완 후 다시 신청해주세요.",
         ];
         this.rejectReason = reasons[Math.floor(Math.random() * reasons.length)];
       }
@@ -430,16 +499,15 @@ export default {
     },
     goToProjectList() {
       this.showPaymentCompleteModal = false;
-      this.$router.push('/mypage/funding-status');
+      this.$router.push("/mypage/funding-status");
     },
     closeModal() {
       this.showReviewModal = false;
       this.reviewProgress = 0;
       this.reviewComplete = false;
-      this.reviewMessage = '프로젝트를 검토중입니다...';
-    }
+      this.reviewMessage = "프로젝트를 검토중입니다...";
+    },
   },
-
 };
 </script>
 
@@ -522,7 +590,7 @@ h3 {
 }
 
 .plan-features li::before {
-  content: '✓';
+  content: "✓";
   position: absolute;
   left: 0;
   color: #28a745;
@@ -582,7 +650,9 @@ label {
   color: #333;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #ddd;
@@ -591,7 +661,9 @@ input, select, textarea {
   transition: border-color 0.3s;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   outline: none;
   border-color: #007bff;
 }
@@ -639,7 +711,8 @@ input[type="file"] {
   margin-top: 3rem;
 }
 
-.cancel-btn, .submit-btn {
+.cancel-btn,
+.submit-btn {
   padding: 0.75rem 2.5rem;
   border: none;
   border-radius: 4px;
@@ -727,7 +800,8 @@ input[type="file"] {
   margin-bottom: 1.5rem;
 }
 
-.payment-btn, .close-btn {
+.payment-btn,
+.close-btn {
   padding: 0.75rem 2rem;
   border: none;
   border-radius: 4px;
@@ -763,7 +837,8 @@ input[type="file"] {
     flex-direction: column;
   }
 
-  .cancel-btn, .submit-btn {
+  .cancel-btn,
+  .submit-btn {
     width: 100%;
   }
 
@@ -833,5 +908,4 @@ input[type="file"] {
 .confirm-btn:hover {
   background-color: #218838;
 }
-
 </style>

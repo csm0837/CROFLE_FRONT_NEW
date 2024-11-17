@@ -4,19 +4,20 @@
     <div class="signup-box">
       <img src="../assets/image/logo.png" alt="Logo" class="logo" />
 
-
       <!-- 회원 유형 선택 -->
       <div v-if="step === 'selectType'">
         <h2>회원 유형 선택</h2>
-        <button @click="setUserType('user')" class="signup-type-button">일반회원</button>
-        <button @click="setUserType('maker')" class="signup-type-button">판매자(메이커)</button>
+        <button @click="setUserType('user')" class="signup-type-button">
+          일반회원
+        </button>
+        <button @click="setUserType('maker')" class="signup-type-button">
+          판매자(메이커)
+        </button>
       </div>
-
 
       <!-- 기본 정보 입력 (일반회원/메이커 공통) -->
       <div v-else-if="step === 'basicForm'">
-        <h2>{{ userType === 'user' ? '일반 회원가입' : '메이커 회원가입' }}</h2>
-
+        <h2>{{ userType === "user" ? "일반 회원가입" : "메이커 회원가입" }}</h2>
 
         <!-- 소셜 간편가입 (일반회원 전용) -->
         <div class="social-signup" v-if="userType === 'user'">
@@ -25,44 +26,88 @@
           <button class="social-login naver-login">네이버로 간편 가입</button>
         </div>
 
-
         <!-- 이메일 간편가입 폼 -->
         <h3>이메일 간편 가입</h3>
         <div class="input-group">
           <label for="email">이메일</label>
           <div class="email-verification">
-            <input type="email" id="email" v-model="email" placeholder="이메일을 입력하세요" required />
-            <button @click="sendEmailVerification" class="verify-button">인증코드 보내기</button>
+            <input
+              type="email"
+              id="email"
+              v-model="email"
+              placeholder="이메일을 입력하세요"
+              required
+            />
+            <button @click="sendEmailVerification" class="verify-button">
+              인증코드 보내기
+            </button>
           </div>
         </div>
         <div class="input-group">
           <label for="emailCode">인증코드</label>
-          <input type="text" id="emailCode" v-model="emailCode" placeholder="인증코드를 입력하세요" required />
+          <input
+            type="text"
+            id="emailCode"
+            v-model="emailCode"
+            placeholder="인증코드를 입력하세요"
+            required
+          />
         </div>
         <div class="input-group">
           <label for="nickname">닉네임</label>
-          <input type="text" id="nickname" v-model="nickname" placeholder="닉네임을 입력하세요" required />
+          <input
+            type="text"
+            id="nickname"
+            v-model="nickname"
+            placeholder="닉네임을 입력하세요"
+            required
+          />
         </div>
         <div class="input-group">
           <label for="phone">전화번호</label>
-          <input type="text" id="phone" v-model="phone" placeholder="전화번호를 입력하세요" required />
+          <input
+            type="text"
+            id="phone"
+            v-model="phone"
+            placeholder="전화번호를 입력하세요"
+            required
+          />
         </div>
         <div class="input-group">
           <label for="password">비밀번호</label>
-          <input type="password" id="password" v-model="password" placeholder="비밀번호를 입력하세요" required />
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            placeholder="비밀번호를 입력하세요"
+            required
+          />
         </div>
         <div class="input-group">
           <label for="confirmPassword">비밀번호 확인</label>
-          <input type="password" id="confirmPassword" v-model="confirmPassword" placeholder="비밀번호를 다시 입력하세요" required />
+          <input
+            type="password"
+            id="confirmPassword"
+            v-model="confirmPassword"
+            placeholder="비밀번호를 다시 입력하세요"
+            required
+          />
         </div>
-
 
         <!-- 주소 입력 -->
         <div class="input-group address-group">
           <label for="postcode">우편번호</label>
           <div class="address-input">
-            <input type="text" id="postcode" v-model="postcode" readonly required />
-            <button @click="openAddressAPI" class="address-button">주소 찾기</button>
+            <input
+              type="text"
+              id="postcode"
+              v-model="postcode"
+              readonly
+              required
+            />
+            <button @click="openAddressAPI" class="address-button">
+              주소 찾기
+            </button>
           </div>
         </div>
         <div class="input-group">
@@ -71,19 +116,31 @@
         </div>
         <div class="input-group">
           <label for="detailAddress">상세주소</label>
-          <input type="text" id="detailAddress" v-model="detailAddress" placeholder="상세주소를 입력하세요" required />
+          <input
+            type="text"
+            id="detailAddress"
+            v-model="detailAddress"
+            placeholder="상세주소를 입력하세요"
+            required
+          />
         </div>
-
 
         <!-- 사업자 번호 추가 필드 (메이커 전용) -->
         <div class="input-group" v-if="userType === 'maker'">
           <label for="businessNumber">사업자 번호</label>
           <div class="business-verification">
-            <input type="text" id="businessNumber" v-model="businessNumber" placeholder="사업자 번호를 입력하세요" required />
-            <button @click="verifyBusinessNumber" class="verify-button">사업자 확인</button>
+            <input
+              type="text"
+              id="businessNumber"
+              v-model="businessNumber"
+              placeholder="사업자 번호를 입력하세요"
+              required
+            />
+            <button @click="verifyBusinessNumber" class="verify-button">
+              사업자 확인
+            </button>
           </div>
         </div>
-
 
         <!-- 개인정보 수집 동의 -->
         <div class="input-group">
@@ -93,16 +150,24 @@
           </label>
         </div>
 
-        <button @click="nextStep" class="signup-button">이메일로 시작하기</button>
+        <button @click="nextStep" class="signup-button">
+          이메일로 시작하기
+        </button>
       </div>
-
 
       <!-- 추가 정보 입력 (일반회원 전용) -->
       <div v-else-if="step === 'additionalInfo' && userType === 'user'">
         <h2>추가 정보 입력</h2>
         <div class="input-group">
           <label for="birthdate">생년월일</label>
-          <input type="text" id="birthdate" v-model="birthdate" placeholder="YYYYMMDD 형식으로 입력하세요" maxlength="8" required />
+          <input
+            type="text"
+            id="birthdate"
+            v-model="birthdate"
+            placeholder="YYYYMMDD 형식으로 입력하세요"
+            maxlength="8"
+            required
+          />
         </div>
         <div class="input-group">
           <label>성별</label>
@@ -123,16 +188,20 @@
             <div
               v-for="category in categories"
               :key="category"
-              :class="['category-item', { selected: interest.includes(category) }]"
+              :class="[
+                'category-item',
+                { selected: interest.includes(category) },
+              ]"
               @click="toggleInterest(category)"
             >
               {{ category }}
             </div>
           </div>
         </div>
-        <button @click="completeRegistration" class="signup-button">가입완료</button>
+        <button @click="completeRegistration" class="signup-button">
+          가입완료
+        </button>
       </div>
-
 
       <!-- 가입 완료 메시지 -->
       <div v-else-if="step === 'complete'">
@@ -146,51 +215,150 @@
 
 <script>
 export default {
-  name: 'SignUp',
+  name: "SignUp",
   data() {
     return {
-      step: 'selectType',
+      step: "selectType",
       userType: null,
-      email: '',
-      emailCode: '',
-      nickname: '',
-      phone: '',
-      password: '',
-      confirmPassword: '',
-      postcode: '',
-      address: '',
-      detailAddress: '',
-      businessNumber: '',
+      email: "",
+      emailCode: "",
+      nickname: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+      postcode: "",
+      address: "",
+      detailAddress: "",
+      businessNumber: "",
       agreeToTerms: false,
-      birthdate: '',
-      gender: '',
+      birthdate: "",
+      gender: "",
       interest: [],
-      categories: ['생활 가전', '주방가전', '스마트 가전', 'DIY', '엔터테인먼트', '웨어러블', '주변 기기'],
+      categories: [
+        "생활 가전",
+        "주방가전",
+        "스마트 가전",
+        "DIY",
+        "엔터테인먼트",
+        "웨어러블",
+        "주변 기기",
+      ],
     };
   },
   methods: {
     setUserType(type) {
       this.userType = type;
-      this.step = 'basicForm';
+      this.step = "basicForm";
     },
-    nextStep() {
+
+    // 이메일 중복 체크 및 인증 코드 발송
+    async sendEmailVerification() {
+      if (!this.email) {
+        alert("이메일을 입력해주세요.");
+        return;
+      }
+
+      try {
+        // 이메일 중복 체크
+        const checkResponse = await fetch(
+          `/api/auth/check-email?email=${this.email}`
+        );
+        const checkResult = await checkResponse.json();
+
+        if (checkResult.isDuplicate) {
+          alert("이미 사용 중인 이메일입니다.");
+          return;
+        }
+
+        // 인증 메일 발송
+        const response = await fetch("/api/auth/send-verification", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `email=${this.email}`,
+        });
+
+        const result = await response.json();
+        alert(result.message);
+      } catch (error) {
+        alert("인증 메일 발송에 실패했습니다.");
+      }
+    },
+
+    // 인증 코드 확인
+    async verifyEmailCode() {
+      if (!this.emailCode) {
+        alert("인증 코드를 입력해주세요.");
+        return false;
+      }
+
+      try {
+        const response = await fetch("/api/auth/verify-code", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `email=${this.email}&code=${this.emailCode}`,
+        });
+
+        const result = await response.json();
+        alert(result.message);
+        return result.verified;
+      } catch (error) {
+        alert("인증 코드 확인에 실패했습니다.");
+        return false;
+      }
+    },
+
+    // 다음 단계로 이동
+    async nextStep() {
+      // 필수 필드 검증
+      if (
+        !this.email ||
+        !this.nickname ||
+        !this.phone ||
+        !this.password ||
+        !this.confirmPassword ||
+        !this.postcode ||
+        !this.address
+      ) {
+        alert("모든 필수 정보를 입력해주세요.");
+        return;
+      }
+
+      // 이메일 인증 확인
+      if (!(await this.verifyEmailCode())) {
+        alert("이메일 인증이 필요합니다.");
+        return;
+      }
+
+      // 비밀번호 일치 확인
       if (this.password !== this.confirmPassword) {
-        alert('비밀번호가 일치하지 않습니다.');
+        alert("비밀번호가 일치하지 않습니다.");
         return;
       }
+
+      // 약관 동의 확인
       if (!this.agreeToTerms) {
-        alert('개인정보 수집 및 이용에 동의해주세요.');
+        alert("개인정보 수집 및 이용에 동의해주세요.");
         return;
       }
-      if (this.userType === 'user') {
-        this.step = 'additionalInfo';
+
+      // 사업자 번호 확인 (메이커인 경우)
+      if (this.userType === "maker" && !this.businessNumber) {
+        alert("사업자 번호를 입력해주세요.");
+        return;
+      }
+
+      if (this.userType === "user") {
+        this.step = "additionalInfo";
       } else {
         this.completeRegistration();
       }
     },
-    sendEmailVerification() {
-      alert('인증코드가 발송되었습니다.');
-    },
+
+    // 주소 API
     openAddressAPI() {
       new daum.Postcode({
         oncomplete: (data) => {
@@ -199,32 +367,124 @@ export default {
         },
       }).open();
     },
-    verifyBusinessNumber() {
-      alert('사업자 번호가 확인되었습니다.');
+
+    // 사업자 번호 확인
+    async verifyBusinessNumber() {
+      if (!this.businessNumber) {
+        alert("사업자 번호를 입력해주세요.");
+        return;
+      }
+
+      try {
+        // 사업자 번호 확인 API 호출 (구현 필요)
+        const response = await fetch(
+          `/api/auth/verify-business?number=${this.businessNumber}`
+        );
+        const result = await response.json();
+
+        if (result.verified) {
+          alert("사업자 번호가 확인되었습니다.");
+        } else {
+          alert("유효하지 않은 사업자 번호입니다.");
+        }
+      } catch (error) {
+        alert("사업자 번호 확인에 실패했습니다.");
+      }
     },
+
+    // 관심 카테고리 토글
     toggleInterest(category) {
       if (this.interest.includes(category)) {
         this.interest = this.interest.filter((item) => item !== category);
       } else {
+        if (this.interest.length >= 3) {
+          alert("관심 분야는 최대 3개까지 선택 가능합니다.");
+          return;
+        }
         this.interest.push(category);
       }
     },
-    completeRegistration() {
-      console.log('회원가입 정보:', {
-        userType: this.userType,
-        email: this.email,
-        nickname: this.nickname,
-        phone: this.phone,
-        address: `${this.postcode} ${this.address} ${this.detailAddress}`,
-        businessNumber: this.businessNumber,
-        birthdate: this.birthdate,
-        gender: this.gender,
-        interest: this.interest,
-      });
-      this.step = 'complete';s
+
+    // 카테고리 이름을 ID로 변환
+    mapCategoriesToIds(selectedCategories) {
+      const categoryMap = {
+        "생활 가전": 1,
+        주방가전: 2,
+        "스마트 가전": 3,
+        DIY: 4,
+        엔터테인먼트: 5,
+        웨어러블: 6,
+        "주변 기기": 7,
+      };
+
+      return selectedCategories.map((category) => categoryMap[category]);
     },
+
+    // 회원가입 완료
+    async completeRegistration() {
+      try {
+        const commonData = {
+          email: this.email,
+          password: this.password,
+          name: this.nickname,
+          nickname: this.nickname,
+          phone: this.phone,
+          zipcode: parseInt(this.postcode),
+          address: this.address,
+          detailAddress: this.detailAddress,
+          loginMethod: false, // 일반 회원가입
+          notification: true, // 기본값
+        };
+
+        if (this.userType === "user") {
+          const userData = {
+            ...commonData,
+            gender: this.gender === "male",
+            birth: this.birthdate,
+            categoryIds: this.mapCategoriesToIds(this.interest),
+          };
+
+          const response = await fetch("/api/auth/signup/user", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message);
+          }
+        } else {
+          const makerData = {
+            ...commonData,
+            business: this.businessNumber,
+          };
+
+          const response = await fetch("/api/auth/signup/maker", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(makerData),
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message);
+          }
+        }
+
+        this.step = "complete";
+      } catch (error) {
+        alert("회원가입에 실패했습니다: " + error.message);
+      }
+    },
+
+    // 로그인 페이지로 이동
     goToLogin() {
-      this.$router.push('/auth/login');
+      this.$router.push("/auth/login");
     },
   },
 };
@@ -338,7 +598,7 @@ export default {
   margin-right: 1rem;
 }
 
-.gender-checkboxes input[type='radio'] {
+.gender-checkboxes input[type="radio"] {
   margin-right: 0.5rem;
 }
 
