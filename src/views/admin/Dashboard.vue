@@ -1,27 +1,23 @@
 <!-- src/views/admin/Dashboard.vue -->
+<!-- src/views/admin/Dashboard.vue -->
 <template>
   <div class="dashboard">
-   
-
     <!-- 메인 콘텐츠 -->
     <main class="content">
-
-
       <!-- 상단 관리자 정보 -->
       <header>
         <span>접속중인 ID: {{ userId }} ({{ userName }})</span>
         <button @click="logout">로그아웃</button>
       </header>
 
-
       <!-- 통계 섹션 -->
       <section class="stats">
-        <div class="stat-box">일 펀딩 수: {{ dailyFundingCount }}</div>
-        <div class="stat-box">월 펀딩 수: {{ monthlyFundingCount }}</div>
-        <div class="stat-box">연 누적 펀딩 수: {{ yearlyFundingCount }}</div>
+        <div class="stat-box">일간 펀딩 등록 건 수: {{ dailyFundingCount }}</div>
+        <div class="stat-box">월간 펀딩 등록 건 수: {{ monthlyFundingCount }}</div>
+        <div class="stat-box">연간 펀딩 등록 건 수: {{ yearlyFundingCount }}</div>
         <div class="stat-box">승인 대기 중 펀딩 수: {{ pendingFundingCount }}</div>
+        <div class="stat-box">진행중인 총 프로젝트 수: {{ totalActiveProjects }}</div>
       </section>
-
 
       <!-- 차트 섹션 -->
       <section class="charts">
@@ -68,6 +64,8 @@ export default {
       monthlyFundingCount: 100,
       yearlyFundingCount: 1200,
       pendingFundingCount: 7,
+      // 진행중인 총 프로젝트 수 데이터 추가
+      totalActiveProjects: 156,
       monthlySignUpData: {
         labels: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
         datasets: [

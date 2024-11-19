@@ -7,6 +7,12 @@
     <!-- 상태 필터 -->
     <div class="status-filter">
       <button 
+        @click="currentFilter = 'before'"
+        :class="{ active: currentFilter === 'before' }"
+      >
+        진행 전 펀딩
+      </button>
+      <button 
         @click="currentFilter = 'ongoing'"
         :class="{ active: currentFilter === 'ongoing' }"
       >
@@ -20,7 +26,7 @@
       </button>
     </div>
  
-    s
+    
     <!-- 프로젝트 목록 -->
     <div class="projects-list">
       <div 
@@ -60,6 +66,7 @@
     return {
       currentFilter: 'ongoing',
       projects: [
+        // 진행 전 프로젝트 (검토중, 반려)
         {
           id: 1,
           name: '스마트 공기청정기 프로젝트',
@@ -71,6 +78,26 @@
         },
         {
           id: 2,
+          name: '스마트 워치 프로젝트',
+          startDate: '2024-03-25',
+          status: 'reviewing',
+          fundingAmount: 0,
+          progressPercentage: 0,
+          targetAmount: 8000000
+        },
+        {
+          id: 3,
+          name: '휴대용 프로젝터 프로젝트',
+          startDate: '2024-03-18',
+          status: 'rejection',
+          fundingAmount: 0,
+          progressPercentage: 0,
+          targetAmount: 15000000
+        },
+        
+        // 진행중인 프로젝트 (펀딩중)
+        {
+          id: 4,
           name: '무선 이어버드 프로젝트',
           startDate: '2024-03-15',
           status: 'funding',
@@ -79,7 +106,27 @@
           targetAmount: 11000000
         },
         {
-          id: 3,
+          id: 5,
+          name: '스마트 백팩 프로젝트',
+          startDate: '2024-03-10',
+          status: 'funding',
+          fundingAmount: 7500000,
+          progressPercentage: 75,
+          targetAmount: 10000000
+        },
+        {
+          id: 6,
+          name: '전기자전거 프로젝트',
+          startDate: '2024-03-05',
+          status: 'funding',
+          fundingAmount: 12000000,
+          progressPercentage: 60,
+          targetAmount: 20000000
+        },
+        
+        // 종료된 프로젝트 (성공, 실패)
+        {
+          id: 7,
           name: '스마트 도어락 프로젝트',
           startDate: '2024-02-01',
           status: 'success',
@@ -88,13 +135,31 @@
           targetAmount: 12500000
         },
         {
-          id: 4,
+          id: 8,
+          name: '태양광 보조배터리 프로젝트',
+          startDate: '2024-01-20',
+          status: 'success',
+          fundingAmount: 25000000,
+          progressPercentage: 125,
+          targetAmount: 20000000
+        },
+        {
+          id: 9,
           name: '로봇청소기 프로젝트',
           startDate: '2024-01-15',
           status: 'failed',
           fundingAmount: 8000000,
           progressPercentage: 65,
           targetAmount: 15000000
+        },
+        {
+          id: 10,
+          name: '스마트 화분 프로젝트',
+          startDate: '2024-01-10',
+          status: 'failed',
+          fundingAmount: 3000000,
+          progressPercentage: 30,
+          targetAmount: 10000000
         }
       ]
     };
@@ -122,6 +187,7 @@
     getStatusText(status) {
       const statusMap = {
         reviewing: '검토중',
+        rejection: '반려',
         funding: '펀딩중',
         success: '펀딩성공',
         failed: '펀딩실패'

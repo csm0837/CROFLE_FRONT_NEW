@@ -1,9 +1,10 @@
 <!-- src/views/auth/IdPasswordRecovery.vue -->
 <template>
   <div class="recovery-container">
-    <img src="../assets/image/logo.png" alt="Logo" class="logo" />
+    <img src="../../assets/image/logo.png" alt="Logo" class="logo" />
 
     <div class="recovery-box">
+  
 
 
       <!-- 아이디 찾기, 비밀번호 찾기 탭 -->
@@ -125,12 +126,13 @@ export default {
 }
 
 .logo {
-  width: 50%;
-  margin-bottom: 1rem;
+  width: 10rem;
+  margin: 7rem auto 2rem auto; 
+  display: block; 
 }
 
 .recovery-box {
-  width: 300px;
+  width: 320px;
   padding: 2rem;
   background-color: white;
   border-radius: 8px;
@@ -141,6 +143,9 @@ export default {
   display: flex;
   justify-content: center;
   margin-bottom: 1rem;
+  text-decoration: none;
+  
+  
 }
 
 .tabs span {

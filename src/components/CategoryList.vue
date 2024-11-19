@@ -1,6 +1,7 @@
 <template>
   <div class="category-list">
     <h2>카테고리</h2>
+    <br>
     <ul class="categories">
       <li
         v-for="category in categories"
@@ -9,7 +10,7 @@
         @click="selectCategory(category.name)"
       >
         <div class="category-logo">
-          <img src="../assets/image/오둥이하트.png" :alt="`${category.name} 로고`" />
+          <img :src="category.icon" :alt="`${category.name} 로고`" />
         </div>
         <span class="category-name">{{ category.name }}</span>
       </li>
@@ -18,18 +19,26 @@
 </template>
 
 <script>
+import DIYIcon from '@/assets/image/icon/DIY 아이콘.png';
+import LifeIcon from '@/assets/image/icon/생활가전 아이콘.png';
+import SmartIcon from '@/assets/image/icon/스마트가전 아이콘.png';
+import EntertainmentIcon from '@/assets/image/icon/엔터테이먼트 아이콘.png';
+import WearableIcon from '@/assets/image/icon/웨어러블 아이콘.png';
+import KitchenIcon from '@/assets/image/icon/주방가전 아이콘.png';
+import PeripheralIcon from '@/assets/image/icon/주변기기.png';
+
 export default {
   name: 'CategoryList',
   data() {
     return {
       categories: [
-        { name: '생활 가전' },
-        { name: '주방 가전' },
-        { name: '스마트 가전' },
-        { name: 'DIY' },
-        { name: '엔터테인먼트' },
-        { name: '웨어러블' },
-        { name: '주변 기기' },
+        { name: '생활 가전', icon: LifeIcon },
+        { name: '주방 가전', icon: KitchenIcon },
+        { name: '스마트 가전', icon: SmartIcon },
+        { name: 'DIY', icon: DIYIcon },
+        { name: '엔터테이먼트', icon: EntertainmentIcon },
+        { name: '웨어러블', icon: WearableIcon },
+        { name: '주변 기기', icon: PeripheralIcon },
       ],
     };
   },
@@ -62,7 +71,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100px;
+  width: 120px;
   padding: 1rem;
   background-color: #f0f0f0;
   border-radius: 8px;
@@ -77,8 +86,9 @@ export default {
 }
 
 .category-logo {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
+  padding: 10px;
   border-radius: 50%;
   background-color: white;
   display: flex;
@@ -90,9 +100,9 @@ export default {
 }
 
 .category-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
 }
 
 .category-name {

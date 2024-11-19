@@ -1,19 +1,13 @@
 <!-- src/views/admin/UserManagement.vue -->
- <!-- src/views/UserSearch.vue -->
 <template>
   <div class="dashboard">
-    
-
     <!-- 메인 콘텐츠 -->
     <main class="content">
-
-
       <!-- 헤더 -->
       <header>
         <span>접속중인 ID: {{ userId }} ({{ userName }})</span>
         <button @click="logout">로그아웃</button>
       </header>
-
 
       <!-- 필터 섹션 -->
       <section class="filters">
@@ -31,19 +25,19 @@
           <option value="관리자">관리자</option>
         </select>
 
-        <input type="text" v-model="searchQuery" placeholder="닉네임 검색" />
+        <input type="text" v-model="searchQuery" placeholder="이름 검색" />
         <button @click="searchUsers">검색</button>
       </section>
-
 
       <!-- 사용자 목록 -->
       <section class="user-list">
         <table>
           <thead>
             <tr>
-              <th>닉네임</th>
+              <th>아이디</th>
               <th>가입일</th>
               <th>상태</th>
+              <th>회원유형</th>
             </tr>
           </thead>
           <tbody>
@@ -51,11 +45,11 @@
               <td>{{ user.nickname }}</td>
               <td>{{ user.signupDate }}</td>
               <td>{{ user.status }}</td>
+              <td>{{ user.type }}</td>
             </tr>
           </tbody>
         </table>
       </section>
-
 
       <!-- 사용자 상세 모달 -->
       <div v-if="showModal" class="modal">
@@ -70,6 +64,7 @@
           <p><strong>주소:</strong> {{ selectedUser.address }}</p>
           <p><strong>계정 생성일:</strong> {{ selectedUser.signupDate }}</p>
           <p><strong>계정 상태:</strong> {{ selectedUser.status }}</p>
+          <p><strong>회원유형:</strong> {{ selectedUser.type }}</p>
         </div>
       </div>
     </main>
@@ -141,9 +136,8 @@ export default {
   },
   methods: {
     logout() {
-  
-  this.$router.push('/admin');
-},
+      this.$router.push('/admin');
+    },
     isActive(path) {
       return this.$route.path.startsWith(path);
     },

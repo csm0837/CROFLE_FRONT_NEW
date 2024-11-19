@@ -100,6 +100,7 @@ const routes = [
       { path: 'login', name: 'Login', component: Login },
       { path: 'signup', name: 'SignUp', component: SignUp },
       { path: 'recovery', name: 'IdPasswordRecovery', component: IdPasswordRecovery },
+      { path: 'reset-password', name: 'ResetPassword', component: () => import('../views/auth/ResetPassword.vue')},
     ],
   },
 ];

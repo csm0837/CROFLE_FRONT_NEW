@@ -36,14 +36,26 @@
       </button>
     </div>
 
-    <!-- 프로젝트 정보 입력 폼 -->
-    <form
+     <!-- 프로젝트 정보 입력 폼 -->
+     <form
       v-if="step === 2"
       @submit.prevent="submitProject"
       class="project-form"
     >
       <div class="form-section">
         <h3>기본 정보</h3>
+        <!-- 선택된 요금제 정보 표시 -->
+        <div class="selected-plan-info">
+          <div class="plan-name">
+            <span class="label">선택한 요금제:</span>
+            <span class="value">{{ selectedPlanInfo.name }}</span>
+          </div>
+          <div class="plan-price">
+            <span class="label">요금제 가격:</span>
+            <span class="value">{{ formattedSelectedPrice }}</span>
+          </div>
+        </div>
+
         <div class="input-group">
           <label for="name">프로젝트 이름</label>
           <input
@@ -166,62 +178,64 @@
           />
         </div>
       </div>
+<!-- //여기 -->
+<div class="form-section">
+  <h3>필수 등록 서류</h3>
+  
+  <!-- 상품 기획서 -->
+  <div class="document-upload-group">
+    <label>상품 기획서</label>
+    <input
+      type="file"
+      @change="(e) => handleDocumentUpload('projectPlan', e)"
+      accept=".pdf,.doc,.docx"
+      required
+    />
+    <small v-if="uploadedDocuments.projectPlan">
+      {{ uploadedDocuments.projectPlan.name }}
+    </small>
+  </div>
 
-      <div class="form-section">
-        <h3>필수 등록 서류</h3>
-        <div class="document-upload-group">
-          <label>프로젝트 기획서</label>
-          <input
-            type="file"
-            @change="(e) => handleDocumentUpload('projectPlan', e)"
-            accept=".pdf,.doc,.docx"
-            required
-          />
-          <small v-if="uploadedDocuments.projectPlan">
-            {{ uploadedDocuments.projectPlan.name }}
-          </small>
-        </div>
+  <!-- 펀딩 기획서 -->
+  <div class="document-upload-group">
+    <label>펀딩 기획서</label>
+    <input
+      type="file"
+      @change="(e) => handleDocumentUpload('developmentPlan', e)"
+      accept=".pdf,.doc,.docx"
+      required
+    />
+    <small v-if="uploadedDocuments.developmentPlan">
+      {{ uploadedDocuments.developmentPlan.name }}
+    </small>
+  </div>
 
-        <div class="document-upload-group">
-          <label>개발 기획서</label>
-          <input
-            type="file"
-            @change="handleDocumentUpload('developmentPlan')"
-            accept=".pdf,.doc,.docx"
-            id="fileInput"
-            required
-          />
-          <small v-if="uploadedDocuments.developmentPlan">
-            {{ uploadedDocuments.developmentPlan.name }}
-          </small>
-        </div>
+  <!-- 개인정보 이용동의서 -->
+  <div class="document-upload-group">
+    <label>개인정보 이용동의서</label>
+    <input
+      type="file"
+      accept=".pdf,.doc,.docx"
+      required
+    />
+    <small v-if="uploadedDocuments.agreement">
+      {{ uploadedDocuments.agreement.name }}
+    </small>
+  </div>
 
-        <div class="document-upload-group">
-          <label>개인정보 이용동의서</label>
-          <input
-            type="file"
-            @change="handleDocumentUpload('agreement')"
-            accept=".pdf,.doc,.docx"
-            required
-          />
-          <small v-if="uploadedDocuments.agreement">
-            {{ uploadedDocuments.agreement.name }}
-          </small>
-        </div>
-
-        <div class="document-upload-group">
-          <label>추가 서류</label>
-          <input
-            type="file"
-            @change="handleDocumentUpload('additional')"
-            accept=".pdf,.doc,.docx"
-          />
-          <small v-if="uploadedDocuments.additional">
-            {{ uploadedDocuments.additional.name }}
-          </small>
-        </div>
-      </div>
-
+  <!-- 추가 서류 -->
+  <div class="document-upload-group">
+    <label>추가 서류</label>
+    <input
+      type="file"
+      accept=".pdf,.doc,.docx"
+    />
+    <small v-if="uploadedDocuments.additional">
+      {{ uploadedDocuments.additional.name }}
+    </small>
+  </div>
+</div>
+<!-- 여기 -->
       <div class="form-buttons">
         <button type="button" class="cancel-btn" @click="cancelRegistration">
           취소
@@ -239,18 +253,23 @@
         </div>
         <p>{{ reviewMessage }}</p>
         <div v-if="reviewComplete" class="review-result">
-          <template v-if="reviewSuccess">
-            <p class="success">승인되었습니다!</p>
-            <button @click="showPaymentModal" class="payment-btn">
-              결제하기
-            </button>
-          </template>
-          <template v-else>
-            <p class="failure">반려되었습니다.</p>
-            <p class="reject-reason">{{ rejectReason }}</p>
-            <button @click="closeModal" class="close-btn">확인</button>
-          </template>
-        </div>
+  <template v-if="reviewSuccess">
+    <p class="success">승인되었습니다!</p>
+    <div class="button-group">
+      <button @click="showPaymentModal" class="payment-btn">
+        결제하기
+      </button>
+      <button @click="closeModal" class="cancel-btn">
+        취소
+      </button>
+    </div>
+  </template>
+  <template v-else>
+    <p class="failure">반려되었습니다.</p>
+    <p class="reject-reason">{{ rejectReason }}</p>
+    <button @click="closeModal" class="close-btn">확인</button>
+  </template>
+</div>
       </div>
     </div>
 
@@ -361,9 +380,24 @@ export default {
       currentMessageIndex: 0,
     };
   },
+  computed: {
+    selectedPlanInfo() {
+      return this.pricingPlans.find(plan => plan.id === this.selectedPlan) || { name: '-', price: 0 };
+    },
+    formattedSelectedPrice() {
+      return this.selectedPlanInfo.price ? 
+        new Intl.NumberFormat('ko-KR', { 
+          style: 'currency', 
+          currency: 'KRW'
+        }).format(this.selectedPlanInfo.price) : '0원';
+    }
+  },
   methods: {
     formatPrice(price) {
-      return new Intl.NumberFormat("ko-KR").format(price) + "원";
+      return new Intl.NumberFormat('ko-KR', { 
+        style: 'currency', 
+        currency: 'KRW'
+      }).format(price);
     },
     selectPlan(planId) {
       this.selectedPlan = planId;
@@ -384,49 +418,78 @@ export default {
         this.contentImagePreview = URL.createObjectURL(file);
       }
     },
-
-
     handleDocumentUpload(type, event) {
+  if (!event || !event.target || !event.target.files) {
+    console.error('Invalid event object');
+    return;
+  }
+
   const file = event.target.files[0];
-  if (file) {
-    // 화면에 보여줄 파일 정보 저장
-    this.uploadedDocuments[type] = file;
-    
-    // 파일 확장자 확인
-    const extension = file.name.split('.').pop().toLowerCase();
-    
-    const reader = new FileReader();
-    
-    if (extension === 'txt') {
-      // 텍스트 파일인 경우
-      reader.onload = () => {
-        const decoder = new TextDecoder('utf-8');
-        const content = decoder.decode(new Uint8Array(reader.result));
-        console.log('Text file content:', content);
-      };
-      reader.readAsArrayBuffer(file);
-    } 
-    else if (['doc', 'docx'].includes(extension)) {
-      // Word 문서인 경우
-      reader.onload = async () => {
+  if (!file) return;
+  
+  this.uploadedDocuments[type] = file;
+
+  if (type === 'projectPlan' || type === 'developmentPlan') {
+    if (file.type === 'text/plain') {
+      const reader = new FileReader();
+      reader.onload = (e) => {
         try {
-          const arrayBuffer = reader.result;
-          const result = await window.mammoth.extractRawText({ arrayBuffer });
-          console.log('Word document content:', result.value);
+          let content = e.target.result;
+          
+          content = content.replace(/\r\n|\r|\n/g, '\n');
+          content = content.replace(/[\u0000-\u0019]+/g, " ");
+          content = content.replace(/\\/g, "\\\\");
+          content = content.replace(/"/g, '\\"');
+          
+          const jsonResult = {
+            [type === 'projectPlan' ? 'projectDocument' : 'fundingDocument']: content.trim()
+          };
+
+          console.log(JSON.stringify(jsonResult));
+          
+          return jsonResult;
         } catch (error) {
-          console.error('Error reading Word document:', error);
+          console.error('텍스트 파일 처리 중 오류:', error);
+        }
+      };
+      reader.readAsText(file, 'UTF-8');
+    } 
+    else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+             || file.type === 'application/msword') {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const arrayBuffer = e.target.result;
+          const result = await window.mammoth.extractRawText({ arrayBuffer });
+          
+          if (result.value) {
+            let content = result.value;
+            
+            content = content.replace(/\r\n|\r|\n/g, '\n');
+            content = content.replace(/[\u0000-\u0019]+/g, " ");
+            content = content.replace(/\\/g, "\\\\");
+            content = content.replace(/"/g, '\\"');
+            
+            const jsonResult = {
+              [type === 'projectPlan' ? 'projectDocument' : 'fundingDocument']: content.trim()
+            };
+
+            console.log(JSON.stringify(jsonResult));
+            
+            return jsonResult;
+          }
+        } catch (error) {
+          console.error('Word 문서 처리 중 오류:', error);
         }
       };
       reader.readAsArrayBuffer(file);
     }
     else {
-      // 다른 타입의 파일
-      console.log('File info:', {
-        name: file.name,
-        type: file.type,
-        size: `${(file.size / 1024).toFixed(2)} KB`
-      });
+      console.log('지원하지 않는 파일 형식입니다:', file.type);
     }
+  } 
+  else if (type === 'agreement' || type === 'additional') {
+    console.log(`${type === 'agreement' ? '개인정보 동의서' : '추가 서류'} 첨부됨:`, file.name);
   }
 },
     cancelRegistration() {
@@ -492,6 +555,9 @@ export default {
         ];
         this.rejectReason = reasons[Math.floor(Math.random() * reasons.length)];
       }
+    },
+    selectedPlanInfo() {
+      return this.pricingPlans.find(plan => plan.id === this.selectedPlan) || { name: '', price: 0 };
     },
     showPaymentModal() {
       this.showReviewModal = false;
@@ -562,12 +628,53 @@ h3 {
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 
+.selected-plan-info {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.selected-plan-info .plan-name,
+.selected-plan-info .plan-price {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.selected-plan-info .label {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.selected-plan-info .value {
+  color: #212529;
+  font-weight: 600;
+}
+
+.selected-plan-info .plan-price {
+  margin-bottom: 0;
+}
+
 .pricing-card h4 {
   font-size: 1.4rem;
   color: #333;
   margin-bottom: 1rem;
 }
 
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.button-group .payment-btn,
+.button-group .cancel-btn {
+  flex: 1;
+  max-width: 150px;
+}
 .plan-price {
   font-size: 1.8rem;
   font-weight: bold;

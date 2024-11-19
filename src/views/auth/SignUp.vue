@@ -2,7 +2,7 @@
 <template>
   <div class="signup-container">
     <div class="signup-box">
-      <img src="../assets/image/logo.png" alt="Logo" class="logo" />
+      <img src="../../assets/image/logo.png" alt="Logo" class="logo" />
 
       <!-- 회원 유형 선택 -->
       <div v-if="step === 'selectType'">
@@ -21,10 +21,14 @@
 
         <!-- 소셜 간편가입 (일반회원 전용) -->
         <div class="social-signup" v-if="userType === 'user'">
-          <h3>간편가입</h3>
-          <button class="social-login kakao-login">카카오로 간편 가입</button>
+     
+      
           <button class="social-login naver-login">네이버로 간편 가입</button>
         </div>
+        <br>
+        <br>
+        <br>
+        
 
         <!-- 이메일 간편가입 폼 -->
         <h3>이메일 간편 가입</h3>

@@ -1,10 +1,11 @@
 <!-- src/views/mypage/ProjectDetail.vue -->
+<!-- src/views/mypage/ProjectDetail.vue -->
 <template>
   <div class="project-detail-page">
     <div class="header">
       <h2>프로젝트 상세 정보</h2>
       <div class="header-buttons">
-        <template v-if="project.status === 'reviewing'">
+        <template v-if="project?.status === 'reviewing'">
           <button class="btn edit-btn" @click="toggleEdit">
             {{ isEditing ? '수정 완료' : '수정하기' }}
           </button>
@@ -12,7 +13,7 @@
             검토받기
           </button>
         </template>
-        <button class="btn back-btn" @click="$router.push('/mypage/funding-status')">
+        <button class="btn back-btn" @click="goToList">
           목록으로
         </button>
       </div>
@@ -20,8 +21,6 @@
 
     <!-- 조회 모드 -->
     <div v-if="!isEditing && project" class="detail-content">
-
-
       <!-- 기본 정보 섹션 -->
       <div class="section">
         <h3>기본 정보</h3>
@@ -53,16 +52,15 @@
             <span class="value">{{ formatPrice(project.targetAmount) }}</span>
           </div>
           <div class="info-item">
-            <span class="label">현재 펀딩액</span>
-            <span class="value">{{ formatPrice(project.currentAmount) }}</span>
+            <span class="label">시작일</span>
+            <span class="value">{{ formatDate(project.startDate) }}</span>
           </div>
           <div class="info-item">
-            <span class="label">달성률</span>
-            <span class="value achievement">{{ project.achievementRate }}%</span>
+            <span class="label">종료일</span>
+            <span class="value">{{ formatDate(project.endDate) }}</span>
           </div>
         </div>
       </div>
-
 
       <!-- 펀딩 현황 섹션 -->
       <div class="section">
@@ -73,19 +71,18 @@
             <span class="stat-value">{{ project.totalParticipants }}명</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">평균 펀딩 금액</span>
-            <span class="stat-value">{{ formatPrice(project.averageFunding) }}</span>
+            <span class="stat-label">현재 펀딩 금액</span>
+            <span class="stat-value">{{ formatPrice(project.currentAmount) }}</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">일일 평균 펀딩액</span>
-            <span class="stat-value">{{ formatPrice(project.dailyAverageFunding) }}</span>
+            <span class="stat-label">달성률</span>
+            <span class="stat-value achievement">{{ project.achievementRate }}%</span>
           </div>
         </div>
       </div>
 
-
-        <!-- 등록된 서류 섹션 -->
-        <div class="section">
+      <!-- 등록된 서류 섹션 -->
+      <div class="section">
         <h3>등록된 서류</h3>
         <div class="document-list">
           <div v-for="(doc, type) in project.documents" :key="type" class="document-item">
@@ -97,7 +94,6 @@
         </div>
       </div>
 
-
       <!-- 상품 정보 섹션 -->
       <div class="section">
         <h3>상품 정보</h3>
@@ -107,7 +103,7 @@
             <span class="label">썸네일 이미지</span>
             <img :src="project.thumbnailImage" alt="썸네일" class="product-image" />
           </div>
-          <div class="image-group" v-if="project.additionalImages.length">
+          <div class="image-group" v-if="project.additionalImages?.length">
             <span class="label">추가 이미지</span>
             <div class="additional-images">
               <img 
@@ -127,9 +123,9 @@
       </div>
     </div>
 
-
     <!-- 수정 모드 -->
     <form v-else-if="isEditing && editProject" @submit.prevent="submitProject" class="project-form">
+      <!-- 기본 정보 입력 섹션 -->
       <div class="form-section">
         <h3>기본 정보</h3>
         <div class="input-group">
@@ -200,6 +196,7 @@
         </div>
       </div>
 
+      <!-- 이미지 업로드 섹션 -->
       <div class="form-section">
         <h3>이미지 등록</h3>
         <div class="image-upload-group">
@@ -211,7 +208,14 @@
             :required="!editProject.thumbnailImage"
           />
           <img v-if="thumbnailPreview" :src="thumbnailPreview" class="image-preview" />
-          <button type="button" class="delete-btn small" v-if="editProject.thumbnailImage" @click="deleteFile('thumbnail')">삭제</button>
+          <button 
+            type="button" 
+            class="delete-btn small" 
+            v-if="editProject.thumbnailImage" 
+            @click="deleteFile('thumbnail')"
+          >
+            삭제
+          </button>
         </div>
 
         <div class="image-upload-group">
@@ -226,7 +230,13 @@
           <div class="image-previews">
             <div v-for="(preview, index) in imagePreviews" :key="index" class="image-item">
               <img :src="preview" class="image-preview" />
-              <button type="button" class="delete-btn small" @click="deleteAdditionalImage(index)">삭제</button>
+              <button 
+                type="button" 
+                class="delete-btn small" 
+                @click="deleteAdditionalImage(index)"
+              >
+                삭제
+              </button>
             </div>
           </div>
         </div>
@@ -240,10 +250,18 @@
             :required="!editProject.contentImage"
           />
           <img v-if="contentImagePreview" :src="contentImagePreview" class="image-preview" />
-          <button type="button" class="delete-btn small" v-if="editProject.contentImage" @click="deleteFile('content')">삭제</button>
+          <button 
+            type="button" 
+            class="delete-btn small" 
+            v-if="editProject.contentImage" 
+            @click="deleteFile('content')"
+          >
+            삭제
+          </button>
         </div>
       </div>
 
+      <!-- 서류 업로드 섹션 -->
       <div class="form-section">
         <h3>필수 등록 서류</h3>
         <div class="document-upload-group">
@@ -254,11 +272,11 @@
             accept=".pdf,.doc,.docx"
             :required="!editProject.documents.projectPlan"
           />
-          <div class="uploaded-doc">
-            <small v-if="editProject.documents.projectPlan">
-              {{ editProject.documents.projectPlan.name }}
-              <button type="button" class="delete-btn small" @click="deleteDocument('projectPlan')">삭제</button>
-            </small>
+          <div class="uploaded-doc" v-if="editProject.documents.projectPlan">
+            <small>{{ editProject.documents.projectPlan.name }}</small>
+            <button type="button" class="delete-btn small" @click="deleteDocument('projectPlan')">
+              삭제
+            </button>
           </div>
         </div>
 
@@ -270,11 +288,11 @@
             accept=".pdf,.doc,.docx"
             :required="!editProject.documents.developmentPlan"
           />
-          <div class="uploaded-doc">
-            <small v-if="editProject.documents.developmentPlan">
-              {{ editProject.documents.developmentPlan.name }}
-              <button type="button" class="delete-btn small" @click="deleteDocument('developmentPlan')">삭제</button>
-            </small>
+          <div class="uploaded-doc" v-if="editProject.documents.developmentPlan">
+            <small>{{ editProject.documents.developmentPlan.name }}</small>
+            <button type="button" class="delete-btn small" @click="deleteDocument('developmentPlan')">
+              삭제
+            </button>
           </div>
         </div>
 
@@ -286,11 +304,11 @@
             accept=".pdf,.doc,.docx"
             :required="!editProject.documents.agreement"
           />
-          <div class="uploaded-doc">
-            <small v-if="editProject.documents.agreement">
-              {{ editProject.documents.agreement.name }}
-              <button type="button" class="delete-btn small" @click="deleteDocument('agreement')">삭제</button>
-            </small>
+          <div class="uploaded-doc" v-if="editProject.documents.agreement">
+            <small>{{ editProject.documents.agreement.name }}</small>
+            <button type="button" class="delete-btn small" @click="deleteDocument('agreement')">
+              삭제
+            </button>
           </div>
         </div>
 
@@ -301,15 +319,16 @@
             @change="handleDocumentUpload('additional')" 
             accept=".pdf,.doc,.docx"
           />
-          <div class="uploaded-doc">
-            <small v-if="editProject.documents.additional">
-              {{ editProject.documents.additional.name }}
-              <button type="button" class="delete-btn small" @click="deleteDocument('additional')">삭제</button>
-            </small>
+          <div class="uploaded-doc" v-if="editProject.documents.additional">
+            <small>{{ editProject.documents.additional.name }}</small>
+            <button type="button" class="delete-btn small" @click="deleteDocument('additional')">
+              삭제
+            </button>
           </div>
         </div>
       </div>
 
+      <!-- 폼 버튼 -->
       <div class="form-buttons">
         <button type="button" class="cancel-btn" @click="cancelEdit">
           취소
@@ -320,11 +339,12 @@
       </div>
     </form>
 
+    <!-- 로딩 상태 -->
     <div v-else class="loading">
       프로젝트 정보를 불러오는 중...
     </div>
 
-    <!-- 승인 요청 완료 모달 -->
+    <!-- 모달들 -->
     <div v-if="showApprovalModal" class="modal">
       <div class="modal-content">
         <h3>승인 요청 완료</h3>
@@ -333,7 +353,6 @@
       </div>
     </div>
 
-    <!-- 성공/실패 모달 -->
     <div v-if="showSuccessModal" class="modal">
       <div class="modal-content">
         <h3>수정되었습니다</h3>
@@ -350,20 +369,20 @@
       </div>
     </div>
   </div>
-</template>
-
+</template> 
 <script>
 export default {
   name: 'ProjectDetail',
+  
   data() {
     return {
-      project: null, 
-      editProject: null, 
+      project: null,
+      editProject: null,
       isEditing: false,
       showApprovalModal: false,
       showSuccessModal: false,
       showErrorModal: false,
-      categories: ['생활 가전', '의류', '식품', '기타'], 
+      categories: ['생활 가전', '의류', '식품', '기타'],
       thumbnailPreview: '',
       contentImagePreview: '',
       imagePreviews: [],
@@ -373,17 +392,20 @@ export default {
         agreement: null,
         additional: null
       }
-    };
+    }
   },
+
   created() {
-    this.fetchProjectDetails();
+    this.fetchProjectDetails()
   },
+
   methods: {
     fetchProjectDetails() {
+      // API 호출을 대신한 더미 데이터
       this.project = {
         id: 1,
         name: '스마트 공기청정기 프로젝트',
-        status: 'reviewing', 
+        status: 'reviewing',
         startDate: '2024-03-15',
         endDate: '2024-04-15',
         category: '생활 가전',
@@ -405,239 +427,202 @@ export default {
         ],
         documents: {
           projectPlan: { name: 'proposal.pdf', url: '/path/to/proposal.pdf' },
-          developmentPlan: { name: 'developmentPlan.docx', url: '/path/to/developmentPlan.docx' },
+          developmentPlan: { name: 'development-plan.pdf', url: '/path/to/development-plan.pdf' },
           agreement: { name: 'agreement.pdf', url: '/path/to/agreement.pdf' },
-          additional: { name: 'additional.docx', url: '/path/to/additional.docx' }
-        },
-        broadcasts: [
-          {
-            id: 1,
-            date: '2024-03-20',
-            time: '14:00',
-            status: 'completed'
-          },
-          {
-            id: 2,
-            date: '2024-03-25',
-            time: '15:00',
-            status: 'upcoming'
-          },
-          {
-            id: 3,
-            date: '2024-03-30',
-            time: '14:00',
-            status: 'upcoming'
-          }
-        ]
-      };
+          additional: { name: 'additional.pdf', url: '/path/to/additional.pdf' }
+        }
+      }
     },
 
     formatPrice(price) {
-      return price.toLocaleString('ko-KR') + '원';
+      return price?.toLocaleString('ko-KR') + '원'
+    },
+
+    formatDate(date) {
+      return new Date(date).toLocaleDateString('ko-KR')
     },
 
     getStatusText(status) {
       const statusMap = {
         reviewing: '검토중',
+        approved: '승인됨',
+        rejected: '반려됨',
         funding: '펀딩중',
         success: '펀딩성공',
         failed: '펀딩실패'
-      };
-      return statusMap[status];
-    },
-  
-    getBroadcastStatusText(status) {
-      const statusMap = {
-        completed: '방송완료',
-        upcoming: '방송예정',
-        cancelled: '방송취소'
-      };
-      return statusMap[status];
+      }
+      return statusMap[status] || status
     },
 
-    toggleEdit() {
-      if (this.isEditing) {
-  
-        this.submitProject();
-      } else {
-        this.editProject = JSON.parse(JSON.stringify(this.project));
-        this.uploadedDocuments = {
-          projectPlan: this.project.documents.projectPlan || null,
-          developmentPlan: this.project.documents.developmentPlan || null,
-          agreement: this.project.documents.agreement || null,
-          additional: this.project.documents.additional || null
-        };
-        this.thumbnailPreview = this.project.thumbnailImage;
-        this.contentImagePreview = this.project.contentImage;
-        this.imagePreviews = [...this.project.additionalImages];
-      }
-      this.isEditing = !this.isEditing;
-    },
-    cancelEdit() {
-      this.isEditing = false;
-      this.editProject = null;
-      this.uploadedDocuments = {
-        projectPlan: null,
-        developmentPlan: null,
-        agreement: null,
-        additional: null
-      };
-      this.thumbnailPreview = '';
-      this.contentImagePreview = '';
-      this.imagePreviews = [];
-    },
-    requestApproval() {
-      this.showApprovalModal = true;
-    },
-    closeApprovalModal() {
-      this.showApprovalModal = false;
-    },
-    closeSuccessModal() {
-      this.showSuccessModal = false;
-      this.isEditing = false; 
-    },
-    closeErrorModal() {
-      this.showErrorModal = false;
-    },
-    handleThumbnailUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.editProject.thumbnailImage = file;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.thumbnailPreview = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    handleContentImageUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.editProject.contentImage = file;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.contentImagePreview = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    handleImagesUpload(event) {
-      const files = event.target.files;
-      if (files && files.length > 0) {
-        Array.from(files).forEach((file) => {
-          if (this.imagePreviews.length < 5) {
-            this.editProject.additionalImages.push(file);
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              this.imagePreviews.push(e.target.result);
-            };
-            reader.readAsDataURL(file);
-          }
-        });
-      }
-    },
-
-    handleDocumentUpload(type) {
-      return (event) => {
-        const file = event.target.files[0];
-        if (file) {
-          this.editProject.documents[type] = file;
-          this.uploadedDocuments[type] = file;
-        }
-      };
-    },
-
-    deleteFile(type) {
-      if (type === 'thumbnail') {
-        this.editProject.thumbnailImage = null;
-        this.thumbnailPreview = '';
-      } else if (type === 'content') {
-        this.editProject.contentImage = null;
-        this.contentImagePreview = '';
-      }
-    },
-    deleteAdditionalImage(index) {
-      this.editProject.additionalImages.splice(index, 1);
-      this.imagePreviews.splice(index, 1);
-    },
-    deleteDocument(type) {
-      this.editProject.documents[type] = null;
-      this.uploadedDocuments[type] = null;
-    },
-  
     getDocumentTypeName(type) {
       const docTypeMap = {
         projectPlan: '프로젝트 기획서',
         developmentPlan: '개발 기획서',
         agreement: '개인정보 이용동의서',
         additional: '추가 서류'
-      };
-      return docTypeMap[type] || '기타 문서';
+      }
+      return docTypeMap[type] || '기타 문서'
     },
-  
-    viewDocument(type) {
-   
-      const doc = this.project.documents[type];
-      if (doc && doc.url) {
-        window.open(doc.url, '_blank');
+
+    toggleEdit() {
+      if (this.isEditing) {
+        this.submitProject()
       } else {
-        alert('문서를 찾을 수 없습니다.');
+        this.editProject = JSON.parse(JSON.stringify(this.project))
+        this.thumbnailPreview = this.project.thumbnailImage
+        this.contentImagePreview = this.project.contentImage
+        this.imagePreviews = [...this.project.additionalImages]
+      }
+      this.isEditing = !this.isEditing
+    },
+
+    handleThumbnailUpload(event) {
+      const file = event.target.files[0]
+      if (file) {
+        this.editProject.thumbnailImage = file
+        this.createPreview(file, 'thumbnailPreview')
       }
     },
- 
-    submitProject() {
+
+    handleContentImageUpload(event) {
+      const file = event.target.files[0]
+      if (file) {
+        this.editProject.contentImage = file
+        this.createPreview(file, 'contentImagePreview')
+      }
+    },
+
+    handleImagesUpload(event) {
+      const files = Array.from(event.target.files)
+      files.forEach(file => {
+        if (this.editProject.additionalImages.length < 5) {
+          this.editProject.additionalImages.push(file)
+          this.createPreview(file, 'imagePreviews', true)
+        }
+      })
+    },
+
+    createPreview(file, target, isArray = false) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        if (isArray) {
+          this[target].push(e.target.result)
+        } else {
+          this[target] = e.target.result
+        }
+      }
+      reader.readAsDataURL(file)
+    },
+
+    handleDocumentUpload(type) {
+      const file = event.target.files[0]
+      if (file) {
+        this.editProject.documents[type] = {
+          name: file.name,
+          file: file
+        }
+      }
+    },
+
+    deleteFile(type) {
+      if (type === 'thumbnail') {
+        this.editProject.thumbnailImage = null
+        this.thumbnailPreview = ''
+      } else if (type === 'content') {
+        this.editProject.contentImage = null
+        this.contentImagePreview = ''
+      }
+    },
+
+    deleteAdditionalImage(index) {
+      this.editProject.additionalImages.splice(index, 1)
+      this.imagePreviews.splice(index, 1)
+    },
+
+    deleteDocument(type) {
+      this.editProject.documents[type] = null
+    },
+
+    viewDocument(type) {
+      const doc = this.project.documents[type]
+      if (doc?.url) {
+        window.open(doc.url, '_blank')
+      }
+    },
+
+    cancelEdit() {
+      this.isEditing = false
+      this.editProject = null
+      this.thumbnailPreview = ''
+      this.contentImagePreview = ''
+      this.imagePreviews = []
+    },
+
+    async submitProject() {
       try {
+        // 실제 API 호출 대신 더미 데이터 업데이트
+        Object.assign(this.project, {
+          name: this.editProject.name,
+          category: this.editProject.category,
+          description: this.editProject.description,
+          price: this.editProject.price,
+          discount: this.editProject.discount,
+          targetAmount: this.editProject.targetAmount
+        })
 
+        // 이미지 처리
         if (this.editProject.thumbnailImage instanceof File) {
-          this.project.thumbnailImage = URL.createObjectURL(this.editProject.thumbnailImage);
-        } else {
-          this.project.thumbnailImage = this.project.thumbnailImage; 
+          this.project.thumbnailImage = URL.createObjectURL(this.editProject.thumbnailImage)
         }
-
         if (this.editProject.contentImage instanceof File) {
-          this.project.contentImage = URL.createObjectURL(this.editProject.contentImage);
-        } else {
-          this.project.contentImage = this.project.contentImage;
+          this.project.contentImage = URL.createObjectURL(this.editProject.contentImage)
+        }
+        if (this.editProject.additionalImages.some(img => img instanceof File)) {
+          this.project.additionalImages = this.editProject.additionalImages.map(file => 
+            file instanceof File ? URL.createObjectURL(file) : file
+          )
         }
 
-        if (this.editProject.additionalImages.length > 0) {
-          this.project.additionalImages = this.editProject.additionalImages.map(file => URL.createObjectURL(file));
-        } else {
-          this.project.additionalImages = [];
-        }
-
-    
+        // 문서 처리
         Object.keys(this.editProject.documents).forEach(type => {
-          const file = this.editProject.documents[type];
-          if (file instanceof File) {
+          const doc = this.editProject.documents[type]
+          if (doc?.file instanceof File) {
             this.project.documents[type] = {
-              name: file.name,
-              url: URL.createObjectURL(file) 
-            };
-          } else {
-            this.project.documents[type] = this.project.documents[type] || null;
+              name: doc.file.name,
+              url: URL.createObjectURL(doc.file)
+            }
           }
-        });
+        })
 
-        this.project.name = this.editProject.name;
-        this.project.category = this.editProject.category;
-        this.project.description = this.editProject.description;
-        this.project.price = this.editProject.price;
-        this.project.discount = this.editProject.discount;
-        this.project.targetAmount = this.editProject.targetAmount;
-
-        this.showSuccessModal = true;
+        this.showSuccessModal = true
+        this.isEditing = false
       } catch (error) {
-        console.error('프로젝트 수정 실패:', error);
-        this.showErrorModal = true;
+        console.error('프로젝트 수정 실패:', error)
+        this.showErrorModal = true
       }
     },
-  
-    cancelRegistration() {
-      this.$router.push('/mypage/funding-status');
+
+    goToList() {
+      this.$router.push('/mypage/funding-status')
+    },
+
+    requestApproval() {
+      this.showApprovalModal = true
+    },
+
+    closeApprovalModal() {
+      this.showApprovalModal = false
+    },
+
+    closeSuccessModal() {
+      this.showSuccessModal = false
+    },
+
+    closeErrorModal() {
+      this.showErrorModal = false
     }
   }
-};
+}
 </script>
 
 <style scoped>

@@ -1,4 +1,5 @@
-<!-- src/views/main/SearchResults.vue --><template>
+<!-- src/views/main/SearchResults.vue -->
+ <template>
   <div class="search-results-page">
     <h2>"{{ searchQuery }}" {{ resultType }}</h2>
     
