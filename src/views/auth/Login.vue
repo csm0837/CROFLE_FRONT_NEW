@@ -1,7 +1,11 @@
-<!-- src/views/auth/Login.vue -->
 <template>
   <div class="login-container">
-    <div class="login-box">
+    <!-- 뒤로가기 버튼 -->
+    <button @click="$router.go(-1)" class="back-button">
+      <span class="material-icons">arrow_back</span>
+    </button>
+
+    <div class="login-content">
       <!-- 로고 -->
       <div class="logo">
         <router-link to="/">
@@ -13,56 +17,58 @@
         </router-link>
       </div>
 
-      <!-- 이메일 입력 -->
-      <div class="input-group">
-        <label for="email">이메일</label>
-        <input
-          type="text"
-          id="email"
-          v-model="email"
-          @input="validateEmail"
-          placeholder="이메일을 입력하세요"
-          @keyup.enter="focusPassword"
-        />
-        <p v-if="emailError" class="error-message">
-          유효한 이메일을 입력해주세요.
-        </p>
-      </div>
+      <div class="login-box">
+        <!-- 이메일 입력 -->
+        <div class="input-group">
+          <label for="email">이메일</label>
+          <input
+            type="text"
+            id="email"
+            v-model="email"
+            @input="validateEmail"
+            placeholder="이메일을 입력하세요"
+            @keyup.enter="focusPassword"
+          />
+          <p v-if="emailError" class="error-message">
+            유효한 이메일을 입력해주세요.
+          </p>
+        </div>
 
-      <!-- 비밀번호 입력 -->
-      <div class="input-group">
-        <label for="password">비밀번호</label>
-        <input
-          type="password"
-          id="password"
-          v-model="password"
-          placeholder="비밀번호를 입력하세요"
-          @keyup.enter="handleLogin" 
-          ref="passwordInput"
-        />
-      </div>
+        <!-- 비밀번호 입력 -->
+        <div class="input-group">
+          <label for="password">비밀번호</label>
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            placeholder="비밀번호를 입력하세요"
+            @keyup.enter="handleLogin" 
+            ref="passwordInput"
+          />
+        </div>
 
-      <!-- 로그인 버튼 -->
-      <button @click="handleLogin" class="login-button">이메일로 로그인</button>
-      <p v-if="loginError" class="error-message">{{ errorMessage }}</p>
+        <!-- 로그인 버튼 -->
+        <button @click="handleLogin" class="login-button">이메일로 로그인</button>
+        <p v-if="loginError" class="error-message">{{ errorMessage }}</p>
 
-      <!-- 소셜 로그인 버튼들 -->
-      <button class="social-login naver-login" @click="handleNaverLogin">
-        네이버 간편 로그인
-      </button>
+        <!-- 소셜 로그인 버튼들 -->
+        <button class="social-login naver-login" @click="handleNaverLogin">
+          네이버 간편 로그인
+        </button>
 
-      <!-- 아이디/비밀번호 찾기 및 회원가입 -->
-      <div class="links">
-        <router-link
-          :to="{
-            name: 'IdPasswordRecovery',
-            query: { redirect: previousRoute },
-          }"
-        >
-          아이디/비밀번호 찾기
-        </router-link>
-        |
-        <router-link to="/auth/signup">회원가입</router-link>
+        <!-- 아이디/비밀번호 찾기 및 회원가입 -->
+        <div class="links">
+          <router-link
+            :to="{
+              name: 'IdPasswordRecovery',
+              query: { redirect: previousRoute },
+            }"
+          >
+            아이디/비밀번호 찾기
+          </router-link>
+          |
+          <router-link to="/auth/signup">회원가입</router-link>
+        </div>
       </div>
     </div>
   </div>
@@ -79,7 +85,6 @@ export default {
       loginError: false,
       errorMessage: "",
       previousRoute: null,
-      // 더미 사용자 데이터
       dummyUsers: [
         {
           email: "seller@test.com",
@@ -102,49 +107,40 @@ export default {
     focusPassword() {
       this.$refs.passwordInput.focus()
     },
-    
     validateEmail() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       this.emailError = this.email.length > 0 && !emailRegex.test(this.email);
     },
-
     async handleLogin() {
-  console.log("클릭");
-  this.validateEmail();
-  if (this.emailError) return;
+      console.log("클릭");
+      this.validateEmail();
+      if (this.emailError) return;
 
-  try {
-    // 더미 데이터로 로그인 처리
-    const user = this.dummyUsers.find(
-      user => user.email === this.email && user.password === this.password
-    );
+      try {
+        const user = this.dummyUsers.find(
+          user => user.email === this.email && user.password === this.password
+        );
 
-    if (user) {
-      // 토큰 저장
-      localStorage.setItem("accessToken", user.accessToken);
-      localStorage.setItem("refreshToken", user.refreshToken);
-      localStorage.setItem("userEmail", user.email);
-      localStorage.setItem("userType", user.type);
-      // 로그인 상태 및 사용자 이름 저장
-      localStorage.setItem("isLoggedIn", "true");
-      // 이메일에서 사용자 이름 추출 (@ 앞부분)
-      const userName = user.email.split('@')[0];
-      localStorage.setItem("userName", userName);
+        if (user) {
+          localStorage.setItem("accessToken", user.accessToken);
+          localStorage.setItem("refreshToken", user.refreshToken);
+          localStorage.setItem("userEmail", user.email);
+          localStorage.setItem("userType", user.type);
+          localStorage.setItem("isLoggedIn", "true");
+          const userName = user.email.split('@')[0];
+          localStorage.setItem("userName", userName);
 
-      // 홈으로 리다이렉트
-      this.$router.push("/");
-    } else {
-      throw new Error("Invalid credentials");
-    }
-  } catch (error) {
-    this.loginError = true;
-    this.errorMessage = "이메일 또는 비밀번호가 올바르지 않습니다.";
-    console.error("Login error:", error);
-  }
-},
-
+          this.$router.push("/");
+        } else {
+          throw new Error("Invalid credentials");
+        }
+      } catch (error) {
+        this.loginError = true;
+        this.errorMessage = "이메일 또는 비밀번호가 올바르지 않습니다.";
+        console.error("Login error:", error);
+      }
+    },
     handleNaverLogin() {
-      // 직접 URL 생성 및 리다이렉션
       const clientId = "Rb3vhJIp1oI1q3_oAJiB";
       const redirectUri = encodeURIComponent(
         "http://localhost:8080/login/oauth2/code/naver"
@@ -153,14 +149,12 @@ export default {
 
       const naverLoginUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}`;
 
-      // 네이버 로그인 페이지로 리다이렉트
       window.location.href = naverLoginUrl;
     },
   },
   mounted() {
     this.previousRoute = this.$route.query.redirect || "/";
 
-    // 로그인 실패 시 에러 메시지 표시
     const error = this.$route.query.error;
     if (error) {
       this.loginError = true;
@@ -176,26 +170,51 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #ffffff;  /* 배경색 흰색으로 변경 */
+  position: relative;
 }
 
-.login-box {
-  width: 300px;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.material-icons {
+  font-size: 24px;
+  color: #333;
+}
+
+.login-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  padding: 0 20px;
 }
 
 .logo {
-  width: 50%;
-  margin: 0 auto 3rem auto; 
-  display: block; 
+  margin-bottom: 1rem;
+  width: 200px;
 }
 
 .logo-image {
   width: 100%;
+}
+
+.login-box {
+  width: 100%;
+  padding: 2rem;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
 }
 
 .input-group {
@@ -244,11 +263,6 @@ export default {
   border: none;
 }
 
-.kakao-login {
-  background-color: #fee500;
-  color: #3c1e1e;
-}
-
 .naver-login {
   background-color: #03c75a;
 }
@@ -256,6 +270,7 @@ export default {
 .links {
   margin-top: 1rem;
   font-size: 0.875rem;
+  text-align: center;
 }
 
 .links a {

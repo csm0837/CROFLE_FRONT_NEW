@@ -1,7 +1,5 @@
 <template>
   <div class="category-list">
-    <h2>카테고리</h2>
-    <br>
     <ul class="categories">
       <li
         v-for="category in categories"
@@ -25,7 +23,7 @@ import SmartIcon from '@/assets/image/icon/스마트가전 아이콘.png';
 import EntertainmentIcon from '@/assets/image/icon/엔터테이먼트 아이콘.png';
 import WearableIcon from '@/assets/image/icon/웨어러블 아이콘.png';
 import KitchenIcon from '@/assets/image/icon/주방가전 아이콘.png';
-import PeripheralIcon from '@/assets/image/icon/주변기기.png';
+import PeripheralIcon from '@/assets/image/icon/주변기기 아이콘.png';
 
 export default {
   name: 'CategoryList',
@@ -53,7 +51,7 @@ export default {
 <style scoped>
 .category-list {
   text-align: center;
-  margin: 2rem auto;
+  margin: 0rem auto;
   max-width: 1200px;
   padding: 0 20px;
 }
@@ -73,16 +71,13 @@ export default {
   align-items: center;
   width: 120px;
   padding: 1rem;
-  background-color: #f0f0f0;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
 .category-item:hover {
-  background-color: var(--primary-color);
-  color: white;
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
 
 .category-logo {
@@ -96,17 +91,42 @@ export default {
   justify-content: center;
   margin-bottom: 0.5rem;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(231, 0, 0, 0.1);
 }
 
 .category-logo img {
   width: 80%;
   height: 80%;
   object-fit: contain;
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
+}
+
+.category-item:hover .category-logo img {
+  filter: grayscale(0%);
 }
 
 .category-name {
   font-size: 0.9rem;
   font-weight: bold;
+  position: relative;
+  display: inline-block;
+}
+
+.category-name::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #000;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease-out;
+}
+
+.category-item:hover .category-name::after {
+  transform: scaleX(1);
 }
 </style>

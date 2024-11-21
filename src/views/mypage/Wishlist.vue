@@ -240,7 +240,7 @@ h2 {
   background: white;
   border: none;
   cursor: pointer;
-  z-index: 2;
+  z-index: 1; /* z-index 값을 1로 변경 */
   padding: 6px;
   display: flex;
   align-items: center;

@@ -95,18 +95,17 @@
 
           <!-- 펀딩 정보 -->
           <div class="funding-info">
-  <div class="price-info">
-    <span class="funding-price">{{ product.price.toLocaleString() }}원</span>
-  </div>
-  <div class="funding-stats">
-    <span class="funding-amount">모인 금액: {{ product.fundingAmount.toLocaleString() }}원</span>
-    <span class="funding-participants">참여 인원: {{ product.participants }}명</span>
-    <span class="funding-days-left">{{ daysLeft }}일 남음</span>
-  </div>
-</div>
+            <div class="price-info">
+              <span class="funding-price">{{ product.price.toLocaleString() }}원</span>
+            </div>
+            <div class="funding-stats">
+              <span class="funding-amount">모인 금액: {{ product.fundingAmount.toLocaleString() }}원</span>
+              <span class="funding-participants">참여 인원: {{ product.participants }}명</span>
+              <span class="funding-days-left">{{ daysLeft }}일 남음</span>
+            </div>
+          </div>
 
           <hr class="divider" />
-
 
           <!-- 액션 버튼-->
           <div class="action-buttons">
@@ -125,7 +124,6 @@
               >
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
               </svg>
-              찜하기
             </button>
 
             <template v-if="product.isLive || product.isVod">
@@ -152,7 +150,6 @@
         </div>
       </div>
 
-
       <!-- 상세 설명 이미지 -->
       <div v-if="product.detailImage" class="detailed-image-section">
         <img 
@@ -161,7 +158,6 @@
           class="product-detail-image" 
         />
       </div>
-
 
       <!-- 많이 본 상품 -->
       <div class="most-viewed-section" v-if="mostViewedProducts.length">
@@ -181,8 +177,10 @@
 <script>
 import { ref, onMounted } from 'vue';
 import ProductItem from '@/components/ProductItem.vue';
-import odungImage from '@/assets/image/오둥이하트.png';
-import 더미 from '@/assets/image/logo.png';
+import 상품상세1 from '@/assets/image/상품상세 - 1.png';
+import 상품상세2 from '@/assets/image/상품상세 - 2.jpg';
+import 상품상세3 from '@/assets/image/상품상세 - 3.jpg';
+import 상품상세4 from '@/assets/image/상품상세 - 4.jpg';
 import 내용 from '@/assets/image/세로로 긴 이미지.jpg';
 
 export default {
@@ -222,9 +220,9 @@ export default {
       const allProducts = [
         { 
           id: 1,
-          image: odungImage,
+          image: 상품상세1,
           detailImage: 내용,
-          images: [odungImage, 더미, odungImage],
+          images: [상품상세1, 상품상세2, 상품상세3, 상품상세4],
           achievement: 75,
           endDate: "2024-12-31",
           name: "라이브 상품",
@@ -239,9 +237,9 @@ export default {
         },
         {
           id: 2,
-          image: odungImage,
+          image: 상품상세1,
           detailImage: 내용,
-          images: [odungImage, 더미, odungImage],
+          images: [상품상세1, 상품상세2, 상품상세3, 상품상세4],
           achievement: 85,
           endDate: "2024-12-31",
           name: "VOD 상품",
@@ -256,9 +254,9 @@ export default {
         },
         {
           id: 3,
-          image: odungImage,
+          image:상품상세1,
           detailImage: 내용,
-          images: [odungImage, 더미, odungImage],
+          images: [상품상세1, 상품상세2, 상품상세3, 상품상세4],
           achievement: 60,
           endDate: "2024-12-31",
           name: "일반 상품",
@@ -290,18 +288,18 @@ export default {
       }
     },
     fetchMostViewedProducts() {
-      this.mostViewedProducts = Array(5).fill().map((_, index) => ({
-        id: 100 + index,
-        image: odungImage,
-        name: `많이 본 상품 ${index + 1}`,
-        company: `회사${String.fromCharCode(65 + index)}`,
-        price: 150000 + (index * 50000),
-        shortDescription: `많이 본 상품 ${index + 1}의 설명입니다.`,
-        achievement: 60 + (index * 5),
-        endDate: "2024-12-31",
-        isLive: index % 2 === 0
-      }));
-    },
+  this.mostViewedProducts = Array(5).fill().map((_, index) => ({
+    id: 100 + index,
+    image: 상품상세1,  
+    name: `많이 본 상품 ${index + 1}`,
+    company: `회사${String.fromCharCode(65 + index)}`,
+    price: 150000 + (index * 50000),
+    shortDescription: `많이 본 상품 ${index + 1}의 설명입니다.`,
+    achievement: 60 + (index * 5),
+    endDate: "2024-12-31",
+    isLive: index % 2 === 0
+  }));
+},
     toggleWishlist() {
       this.isWishlisted = !this.isWishlisted;
       localStorage.setItem(`wishlist_${this.product.id}`, this.isWishlisted);
@@ -340,33 +338,32 @@ export default {
  margin: 0 auto;
  padding: 2rem;
  padding-bottom: 60px;
+ font-family: 'Noto Sans KR', sans-serif;
 }
-
 .product-detail-container {
- display: flex;
- flex-wrap: wrap;
- gap: 2rem;
- margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start; /* stretch에서 flex-start로 변경 */
 }
 
 .product-image-section {
- flex: 1;
- min-width: 300px;
- position: relative;
+  flex: 1;
+  min-width: 300px;
+  position: relative;
+  font-size: 0; /* 이미지 아래 여백 제거 */
+  line-height: 0; /* 이미지 아래 여백 제거 */
 }
 
 .image-slider {
   position: relative;
   width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center; 
-}.image-slider {
-  position: relative;
-  width: 100%;
   height: 0;
-  padding-bottom: 75%; 
+  padding-bottom: 62.5%; /* 16:10 비율 */
   overflow: hidden;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin: 0; /* 마진 제거 */
 }
 
 .product-main-image {
@@ -375,54 +372,72 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain; 
-  background-color: #f8f9fa; 
-}
-
-.slider-button {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 60px;
-  width: 30px;
-  background-color: rgba(0,0,0,0.3);
-  border: none;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  z-index: 2;
-}
-
-.prev-button {
-  left: 0;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-}
-
-.next-button {
-  right: 0;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-}
-
-.slider-button:hover {
-  background-color: rgba(0,0,0,0.5);
+  object-fit: cover;
+  background-color: #f8f9fa;
 }
 
 .single-image {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 62.5%;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin: 0; /* 마진 제거 */
+}
+
+.product-info-section {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: auto; /* height: 100%에서 auto로 변경 */
+}
+
+.slider-button {
+ position: absolute;
+ top: 50%;
+ transform: translateY(-50%);
+ height: 60px;
+ width: 30px;
+ background-color: rgba(0,0,0,0.3);
+ border: none;
+ color: white;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 1rem;
+ z-index: 2;
+}
+
+.prev-button {
+ left: 0;
+ border-top-right-radius: 4px;
+ border-bottom-right-radius: 4px;
+}
+
+.next-button {
+ right: 0;
+ border-top-left-radius: 4px;
+ border-bottom-left-radius: 4px;
+}
+
+.slider-button:hover {
+ background-color: rgba(0,0,0,0.5);
+}
+
+
+.detailed-image-section {
+ margin-top: 2rem;
  display: flex;
  justify-content: center;
 }
 
-.detailed-image-section {
- margin-top: 2rem;
-}
-
 .product-detail-image {
- width: 100%;
+ width: 80%;
  height: auto;
  border-radius: 8px;
  object-fit: cover;
@@ -430,17 +445,22 @@ export default {
 }
 
 .product-info-section {
- flex: 1;
- min-width: 300px;
- display: flex;
- flex-direction: column;
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%; /* 이미지 섹션과 동일한 높이 유지 */
 }
 
 .top-info {
  display: flex;
  justify-content: space-between;
- align-items: center;
+ align-items: flex-start;
  margin-bottom: 1rem;
+ position: relative;
+ overflow: hidden; /* 추가 */
+ padding: 4px 0; /* 패딩 추가하여 상하 여백 확보 */
 }
 
 .funding-percentage span {
@@ -448,12 +468,20 @@ export default {
  color: white;
  padding: 4px 8px;
  border-radius: 4px;
- font-weight: bold;
+ font-weight: 500;
+}
+
+.category {
+ position: absolute;
+ right: 0;
+ top: 0;
+ margin-top: -5px;
 }
 
 .category span {
  font-size: 0.9rem;
- color: #555;
+ color: #ff0000;
+ font-weight: 500;
 }
 
 .icons {
@@ -483,87 +511,95 @@ export default {
  font-size: 2rem;
  margin: 0.5rem 0;
  color: #333;
+ font-weight: 700;
 }
 
 .product-description {
- font-size: 1rem;
+ font-size: 1.1rem;
  color: #666;
  margin-bottom: 1rem;
+ font-weight: 400;
+ line-height: 1.6;
 }
 
 .funding-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+ display: flex;
+ flex-direction: column;
+ gap: 0.5rem;
+ margin-bottom: 1rem;
+ flex: 1;
 }
 
 .price-info {
-  margin-bottom: 0.5rem;
+ margin-bottom: 0.25rem;
 }
 
 .funding-price {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #333;
+ font-size: 2.2rem;
+ font-weight: 700;
+ color: #333;
 }
 
 .funding-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  color: #666;
+ display: flex;
+ flex-wrap: wrap;
+ gap: 1rem;
+ color: #666;
 }
 
 .funding-amount,
 .funding-participants,
 .funding-days-left {
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
+ font-size: 0.95rem;
+ padding: 0.5rem 1rem;
+ background-color: #f8f9fa;
+ border-radius: 4px;
+ display: inline-flex;
+ align-items: center;
+ font-weight: 500;
 }
-
 
 .divider {
  border: none;
  border-top: 1px solid #ddd;
- margin: 1rem 0;
+ margin: 0.5rem 0;
 }
 
 .action-buttons {
-  display: flex; 
-  gap: 1rem;
-  min-height: 48px; 
-  flex-wrap: nowrap; 
+ display: flex;
+ gap: 1rem;
+ min-height: 48px;
+ width: 100%;
+ margin-top: 0.5rem;
+ margin-bottom: 0;
 }
 
 .btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  min-width: fit-content; 
+ padding: 0.75rem 1.5rem;
+ border: none;
+ border-radius: 4px;
+ cursor: pointer;
+ font-size: 1rem;
+ transition: all 0.3s ease;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-family: 'Noto Sans KR', sans-serif;
+ font-weight: 500;
 }
 
 .wishlist-btn {
-  background-color: white;
-  border: 2px solid #ff4b4b;
-  color: #333;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0; 
+ width: 48px;
+ height: 48px;
+ padding: 0;
+ background-color: white;
+ border: 2px solid #ff4b4b;
+ flex-shrink: 0;
 }
 
 .wishlist-btn svg {
- width: 20px;
- height: 20px;
+ width: 24px;
+ height: 24px;
  stroke: #333;
  fill: none;
  stroke-width: 2;
@@ -571,7 +607,6 @@ export default {
 
 .wishlist-btn.active {
  background-color: #ff4b4b;
- color: white;
 }
 
 .wishlist-btn.active svg {
@@ -579,28 +614,28 @@ export default {
  fill: #ff4b4b;
 }
 
+.live-btn, .vod-btn, .fund-btn {
+ flex: 1;
+}
+
 .live-btn {
  background-color: #dc3545;
  color: white;
 }
 
-.live-btn, .vod-btn {
-  flex-shrink: 0; 
+.vod-btn {
+ background-color: #6c757d;
+ color: white;
 }
 
 .fund-btn {
-  background-color: #007bff;
-  color: white;
-  flex: 1; 
+ background-color: #007bff;
+ color: white;
 }
-
 
 .fund-btn-full {
-  flex: 1;
-}
-
-.btn:hover {
- opacity: 0.9;
+ flex: 1;
+ width: calc(100% - 64px);
 }
 
 .most-viewed-section {
@@ -610,6 +645,8 @@ export default {
 .most-viewed-section h2 {
  margin-bottom: 1rem;
  color: var(--primary-color);
+ font-weight: 700;
+ font-size: 1.5rem;
 }
 
 .product-list {
@@ -627,37 +664,6 @@ export default {
  background-color: rgba(0, 0, 0, 0.2);
  border-radius: 4px;
 }
-
-
-@media (max-width: 768px) {
- .product-detail-container {
-   flex-direction: column;
-   align-items: center;
- }
-
- .product-info-section {
-   width: 100%;
- }
-
- .product-list {
-   flex-wrap: nowrap;
- }
-
- .category-icons {
-   flex-direction: column;
-   align-items: flex-start;
- }
- .action-buttons {
-    min-height: 40px; 
-    gap: 0.5rem; 
-  }
-
-  .btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem; 
-  }
-}
-
 
 .loading-spinner {
  display: flex;
@@ -699,10 +705,68 @@ export default {
  }
 }
 
-
 .error-message {
  color: red;
  text-align: center;
  margin: 2rem 0;
+ font-family: 'Noto Sans KR', sans-serif;
+}
+
+@media (max-width: 768px) {
+ .product-detail-container {
+   height: auto;
+   flex-direction: column;
+   align-items: center;
+ }
+
+ .product-info-section {
+   width: 100%;
+   height: auto;
+ }
+
+ .product-image-section {
+   height: auto;
+ }
+
+
+
+ .product-list {
+   flex-wrap: nowrap;
+ }
+
+ .category-icons {
+   flex-direction: column;
+   align-items: flex-start;
+ }
+
+ .action-buttons {
+   min-height: 40px;
+   gap: 0.5rem;
+ }
+
+ .btn {
+   padding: 0.5rem 1rem;
+   font-size: 0.9rem;
+ }
+
+ .wishlist-btn {
+   width: 40px;
+   height: 40px;
+ }
+
+ .wishlist-btn svg {
+   width: 20px;
+   height: 20px;
+ }
+
+ .funding-stats {
+   flex-direction: column;
+ }
+
+ .funding-amount,
+ .funding-participants,
+ .funding-days-left {
+   width: 100%;
+ }
 }
 </style>

@@ -13,7 +13,6 @@
       </div>
     </div>
  
-    s
     <!-- 펀딩 목록 -->
     <div class="funding-list">
       <div 

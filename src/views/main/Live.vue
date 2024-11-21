@@ -3,7 +3,7 @@
   <div class="live-page">
     <h2>라이브 방송</h2>
  
-    s
+
     <!-- LIVE 섹션 -->
     <div class="live-section">
       <h3>현재 방송중인 라이브</h3>
