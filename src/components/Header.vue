@@ -11,14 +11,23 @@
       <nav class="navigation">
         <ul class="nav-center">
           <li><router-link to="/live" class="nav-item">라이브</router-link></li>
-          <li><router-link to="/schedule" class="nav-item">편성표</router-link></li>
-          <li class="category-container" @mouseenter="showCategoryDropdown" @mouseleave="hideCategoryDropdown">
+          <li>
+            <router-link to="/schedule" class="nav-item">편성표</router-link>
+          </li>
+          <li
+            class="category-container"
+            @mouseenter="showCategoryDropdown"
+            @mouseleave="hideCategoryDropdown"
+          >
             <a href="#" class="nav-item">카테고리</a>
             <div v-if="categoryDropdownVisible" class="category-dropdown">
-              <router-link 
-                v-for="category in categories" 
+              <router-link
+                v-for="category in categories"
                 :key="category.name"
-                :to="{ name: 'SearchResults', query: { q: category.name, type: 'category' }}" 
+                :to="{
+                  name: 'SearchResults',
+                  query: { q: category.name, type: 'category' },
+                }"
                 class="category-item"
               >
                 {{ category.name }}
@@ -42,54 +51,75 @@
       </nav>
 
       <div class="user-info">
-        <div v-if="isLoggedIn" 
-             class="profile-container" 
-             @mouseenter="showDropdown" 
-             @mouseleave="startHideDropdown">
-          <img src="../assets/image/icon/프로필.png" alt="User Profile" class="profile-img" />
-          <div v-show="dropdownVisible" 
-               class="dropdown-menu"
-               @mouseenter="cancelHideDropdown"
-               @mouseleave="startHideDropdown">
+        <div
+          v-if="isLoggedIn"
+          class="profile-container"
+          @mouseenter="showDropdown"
+          @mouseleave="startHideDropdown"
+        >
+          <img
+            src="../assets/image/icon/프로필.png"
+            alt="User Profile"
+            class="profile-img"
+          />
+          <div
+            v-show="dropdownVisible"
+            class="dropdown-menu"
+            @mouseenter="cancelHideDropdown"
+            @mouseleave="startHideDropdown"
+          >
             <div class="profile-info">
-              <img src="../assets/image/icon/프로필.png" alt="User Profile" class="profile-thumbnail" />
+              <img
+                src="../assets/image/icon/프로필.png"
+                alt="User Profile"
+                class="profile-thumbnail"
+              />
               <span class="username">{{ userName }}</span>
             </div>
-            <router-link to="/mypage" class="dropdown-item">마이페이지</router-link>
-            <router-link 
-              v-if="userType !== 'seller'" 
-              to="/mypage/wishlist" 
-              class="dropdown-item">찜목록</router-link>
-            <router-link to="/" class="dropdown-item" @click.native="logout">로그아웃</router-link>
+            <router-link to="/mypage" class="dropdown-item"
+              >마이페이지</router-link
+            >
+            <router-link
+              v-if="userType !== 'seller'"
+              to="/mypage/wishlist"
+              class="dropdown-item"
+              >찜목록</router-link
+            >
+            <router-link to="/" class="dropdown-item" @click.native="logout"
+              >로그아웃</router-link
+            >
           </div>
         </div>
-        <router-link v-else to="/auth/login" class="login-button">로그인</router-link>
+        <router-link v-else to="/auth/login" class="login-button"
+          >로그인</router-link
+        >
       </div>
     </div>
   </header>
 </template>
 
 <script>
-import DIYIcon from '@/assets/image/icon/DIY 아이콘.png';
-import LifeIcon from '@/assets/image/icon/생활가전 아이콘.png';
-import SmartIcon from '@/assets/image/icon/스마트가전 아이콘.png';
-import EntertainmentIcon from '@/assets/image/icon/엔터테이먼트 아이콘.png';
-import WearableIcon from '@/assets/image/icon/웨어러블 아이콘.png';
-import KitchenIcon from '@/assets/image/icon/주방가전 아이콘.png';
-import PeripheralIcon from '@/assets/image/icon/주변기기 아이콘.png';
+import { authApi } from "@/api";
+import DIYIcon from "@/assets/image/icon/DIY 아이콘.png";
+import LifeIcon from "@/assets/image/icon/생활가전 아이콘.png";
+import SmartIcon from "@/assets/image/icon/스마트가전 아이콘.png";
+import EntertainmentIcon from "@/assets/image/icon/엔터테이먼트 아이콘.png";
+import WearableIcon from "@/assets/image/icon/웨어러블 아이콘.png";
+import KitchenIcon from "@/assets/image/icon/주방가전 아이콘.png";
+import PeripheralIcon from "@/assets/image/icon/주변기기 아이콘.png";
 
 export default {
   name: "Header",
   data() {
     return {
       categories: [
-        { name: '생활 가전', icon: LifeIcon },
-        { name: '주방 가전', icon: KitchenIcon },
-        { name: '스마트 가전', icon: SmartIcon },
-        { name: 'DIY', icon: DIYIcon },
-        { name: '엔터테이먼트', icon: EntertainmentIcon },
-        { name: '웨어러블', icon: WearableIcon },
-        { name: '주변 기기', icon: PeripheralIcon },
+        { name: "생활 가전", icon: LifeIcon },
+        { name: "주방 가전", icon: KitchenIcon },
+        { name: "스마트 가전", icon: SmartIcon },
+        { name: "DIY", icon: DIYIcon },
+        { name: "엔터테이먼트", icon: EntertainmentIcon },
+        { name: "웨어러블", icon: WearableIcon },
+        { name: "주변 기기", icon: PeripheralIcon },
       ],
       isLoggedIn: false,
       searchQuery: "",
@@ -101,22 +131,45 @@ export default {
     };
   },
   methods: {
-    logout() {
-      localStorage.removeItem("isLoggedIn");
-      localStorage.removeItem("userType");
-      localStorage.removeItem("userName");
-      localStorage.removeItem("userEmail");
-      this.isLoggedIn = false;
-      this.dropdownVisible = false;
-      this.userName = "";
-      this.userType = "";
-      this.$router.push("/");
-    },
+    async logout() {
+    try {
+        console.log('로그아웃 시작');
+        
+        // 로그아웃 API 호출
+        await authApi.logout();
+        console.log('로그아웃 API 호출 성공');
+
+        // 로컬 스토리지 초기화
+        localStorage.clear();  // 모든 데이터 삭제
+        
+        // 상태 초기화
+        this.isLoggedIn = false;
+        this.dropdownVisible = false;
+        this.userName = "";
+        this.userType = "";
+
+        console.log('로컬 스토리지 및 상태 초기화 완료');
+
+        // 로그인 상태 변경 이벤트 발생
+        window.dispatchEvent(new Event('login-state-changed'));
+        
+        // 홈으로 이동
+        await this.$router.push("/");
+        console.log('홈으로 이동 완료');
+        
+    } catch (error) {
+        console.error('로그아웃 에러:', error);
+        // 에러가 발생해도 로컬 데이터는 삭제
+        localStorage.clear();
+        this.isLoggedIn = false;
+        this.$router.push("/");
+    }
+},
     handleSearch() {
       if (this.searchQuery.trim()) {
         this.$router.push({
-          name: 'SearchResults',
-          query: { q: this.searchQuery, type: 'search' }
+          name: "SearchResults",
+          query: { q: this.searchQuery, type: "search" },
         });
       }
     },
@@ -156,13 +209,12 @@ export default {
   },
   mounted() {
     this.loadUserInfo();
+
+    // 로그인 상태 변경 감지
+    window.addEventListener("login-state-changed", this.loadUserInfo);
+
+    // storage 이벤트는 다른 탭에서의 변경만 감지하므로 custom 이벤트 사용
     window.addEventListener("storage", this.loadUserInfo);
-  },
-  beforeUnmount() {
-    if (this.dropdownTimer) {
-      clearTimeout(this.dropdownTimer);
-    }
-    window.removeEventListener("storage", this.loadUserInfo);
   },
 };
 </script>
@@ -187,7 +239,7 @@ export default {
   position: relative;
   z-index: 2;
   width: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 }
 
 .container {
@@ -257,7 +309,7 @@ export default {
 
 .category-container {
   position: relative;
-  z-index: 1000; 
+  z-index: 1000;
 }
 
 .category-dropdown {
@@ -271,7 +323,7 @@ export default {
   padding: 0.5rem 0;
   min-width: 160px;
   margin-top: 0.5rem;
-  z-index: 1000; 
+  z-index: 1000;
 }
 
 .category-item {

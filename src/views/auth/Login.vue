@@ -42,13 +42,15 @@
             id="password"
             v-model="password"
             placeholder="비밀번호를 입력하세요"
-            @keyup.enter="handleLogin" 
+            @keyup.enter="handleLogin"
             ref="passwordInput"
           />
         </div>
 
         <!-- 로그인 버튼 -->
-        <button @click="handleLogin" class="login-button">이메일로 로그인</button>
+        <button @click="handleLogin" class="login-button">
+          이메일로 로그인
+        </button>
         <p v-if="loginError" class="error-message">{{ errorMessage }}</p>
 
         <!-- 소셜 로그인 버튼들 -->
@@ -75,92 +77,146 @@
 </template>
 
 <script>
+import { authApi } from '@/api'
+
 export default {
-  name: "Login",
-  data() {
-    return {
-      email: "",
-      password: "",
-      emailError: false,
-      loginError: false,
-      errorMessage: "",
-      previousRoute: null,
-      dummyUsers: [
-        {
-          email: "seller@test.com",
-          password: "1234",
-          type: "seller",
-          accessToken: "dummy-seller-access-token",
-          refreshToken: "dummy-seller-refresh-token",
-        },
-        {
-          email: "buyer@test.com",
-          password: "1234",
-          type: "buyer",
-          accessToken: "dummy-buyer-access-token",
-          refreshToken: "dummy-buyer-refresh-token",
-        }
-      ]
-    };
-  },
-  methods: {
-    focusPassword() {
-      this.$refs.passwordInput.focus()
-    },
-    validateEmail() {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      this.emailError = this.email.length > 0 && !emailRegex.test(this.email);
-    },
-    async handleLogin() {
-      console.log("클릭");
-      this.validateEmail();
-      if (this.emailError) return;
+ name: "Login",
+ data() {
+   return {
+     email: "",
+     password: "",
+     emailError: false,
+     loginError: false,
+     errorMessage: "",
+     previousRoute: null,
+   };
+ },
+ methods: {
+   focusPassword() {
+     this.$refs.passwordInput.focus()
+   },
+   
+   validateEmail() {
+     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+     this.emailError = this.email.length > 0 && !emailRegex.test(this.email);
+   },
 
-      try {
-        const user = this.dummyUsers.find(
-          user => user.email === this.email && user.password === this.password
-        );
+   async handleLogin() {
+     try {
+       // 입력값 검증
+       this.validateEmail();
+       if (this.emailError) {
+         this.errorMessage = "유효한 이메일을 입력해주세요.";
+         return;
+       }
 
-        if (user) {
-          localStorage.setItem("accessToken", user.accessToken);
-          localStorage.setItem("refreshToken", user.refreshToken);
-          localStorage.setItem("userEmail", user.email);
-          localStorage.setItem("userType", user.type);
-          localStorage.setItem("isLoggedIn", "true");
-          const userName = user.email.split('@')[0];
-          localStorage.setItem("userName", userName);
+       if (!this.email || !this.password) {
+         this.loginError = true;
+         this.errorMessage = "이메일과 비밀번호를 모두 입력해주세요.";
+         return;
+       }
 
-          this.$router.push("/");
-        } else {
-          throw new Error("Invalid credentials");
-        }
-      } catch (error) {
-        this.loginError = true;
-        this.errorMessage = "이메일 또는 비밀번호가 올바르지 않습니다.";
-        console.error("Login error:", error);
-      }
-    },
-    handleNaverLogin() {
-      const clientId = "Rb3vhJIp1oI1q3_oAJiB";
-      const redirectUri = encodeURIComponent(
-        "http://localhost:8080/login/oauth2/code/naver"
-      );
-      const state = Math.random().toString(36).substring(7);
+       const loginData = {
+         email: this.email,
+         password: this.password
+       };
+       
+       console.log('로그인 요청:', loginData);
+       
+       // API 호출
+       const response = await authApi.login(loginData);
+       console.log('로그인 응답:', response.data);
 
-      const naverLoginUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}`;
+       // 로그인 성공 처리
+       const { accessToken, refreshToken, userEmail, role } = response.data;
+       
+       // 로컬 스토리지에 저장
+       localStorage.setItem("accessToken", accessToken);
+       localStorage.setItem("refreshToken", refreshToken);
+       localStorage.setItem("userEmail", userEmail);
+       localStorage.setItem("userType", role);
+       localStorage.setItem("isLoggedIn", "true");
+       
+       // 사용자 이름 저장
+       const userName = userEmail.split('@')[0];
+       localStorage.setItem("userName", userName);
 
-      window.location.href = naverLoginUrl;
-    },
-  },
-  mounted() {
-    this.previousRoute = this.$route.query.redirect || "/";
+       // 로그인 상태 변경 이벤트 발생
+       window.dispatchEvent(new Event('login-state-changed'));
 
-    const error = this.$route.query.error;
-    if (error) {
-      this.loginError = true;
-      this.errorMessage = error;
-    }
-  },
+       // 페이지 이동
+       if (this.previousRoute && this.previousRoute !== '/auth/login') {
+         this.$router.push(this.previousRoute);
+       } else {
+         this.$router.push("/");
+       }
+
+     } catch (error) {
+       console.error('로그인 에러:', error);
+       
+       this.loginError = true;
+       if (error.response) {
+         switch (error.response.status) {
+           case 400:
+             this.errorMessage = "이메일 또는 비밀번호가 올바르지 않습니다.";
+             break;
+           case 401:
+             this.errorMessage = "인증에 실패했습니다.";
+             break;
+           case 404:
+             this.errorMessage = "존재하지 않는 사용자입니다.";
+             break;
+           case 500:
+             this.errorMessage = "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+             break;
+           default:
+             this.errorMessage = "로그인 중 오류가 발생했습니다.";
+         }
+       } else {
+         this.errorMessage = "서버와 통신 중 오류가 발생했습니다.";
+       }
+     }
+   },
+
+   async handleNaverLogin() {
+     try {
+       const response = await authApi.getNaverLoginUrl();
+       window.location.href = response.data;
+     } catch (error) {
+       console.error('네이버 로그인 에러:', error);
+       alert('네이버 로그인을 시도하는 중 오류가 발생했습니다.');
+     }
+   },
+
+   resetForm() {
+     this.email = "";
+     this.password = "";
+     this.emailError = false;
+     this.loginError = false;
+     this.errorMessage = "";
+   }
+ },
+ mounted() {
+   // 이전 페이지 경로 저장
+   this.previousRoute = this.$route.query.redirect || "/";
+
+   // URL 파라미터에서 에러 메시지 확인
+   const error = this.$route.query.error;
+   if (error) {
+     this.loginError = true;
+     this.errorMessage = error;
+   }
+
+   // 토큰이 있으면 자동 로그인 처리
+   const token = localStorage.getItem('accessToken');
+   if (token) {
+     console.log('기존 토큰 발견, 자동 로그인 처리');
+     this.$router.push('/');
+   }
+ },
+ beforeUnmount() {
+   this.resetForm();
+ }
 };
 </script>
 
@@ -170,7 +226,7 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #ffffff;  /* 배경색 흰색으로 변경 */
+  background-color: #ffffff; /* 배경색 흰색으로 변경 */
   position: relative;
 }
 

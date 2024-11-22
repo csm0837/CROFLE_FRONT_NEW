@@ -66,6 +66,9 @@
 </template>
 
 <script>
+
+import { authApi } from '@/api';
+
 export default {
   name: 'IdPasswordRecovery',
   data() {
@@ -85,28 +88,69 @@ export default {
       this.isIdRecovery = tab === 'id';
       this.clearFields();
     },
-    findId() {
-      if (this.name && this.phone) {
-        this.modalMessage = "회원님의 아이디는 'example@example.com'입니다.";
+     // 아이디 찾기
+     async findId() {
+      try {
+        if (!this.name || !this.phone) {
+          alert('이름과 전화번호를 입력해주세요.');
+          return;
+        }
+
+        const response = await authApi.findEmail({
+          name: this.name,
+          phone: this.phone
+        });
+
+        if (response.data && response.data.email) {
+          this.modalMessage = `회원님의 아이디는 '${response.data.email}' 입니다.`;
+          this.modalButtonText = '확인';
+          this.showModal = true;
+        } else {
+          this.modalMessage = '일치하는 회원 정보가 없습니다.';
+          this.modalButtonText = '확인';
+          this.showModal = true;
+        }
+      } catch (error) {
+        console.error('아이디 찾기 에러:', error);
+        this.modalMessage = '일치하는 회원 정보가 없습니다.';
         this.modalButtonText = '확인';
         this.showModal = true;
-      } else {
-        alert('이름과 전화번호를 입력해주세요.');
       }
     },
-    findPassword() {
-      if (this.email && this.name && this.phone) {
+
+    // 비밀번호 재설정
+    async findPassword() {
+      try {
+        if (!this.email || !this.name || !this.phone) {
+          this.passwordError = true;
+          return;
+        }
+
+        await authApi.sendResetPasswordEmail({
+          email: this.email,
+          name: this.name,
+          phone: this.phone
+        });
+
         this.modalMessage = '비밀번호 재설정 메일을 발송했습니다.';
         this.modalButtonText = '로그인 화면으로';
         this.showModal = true;
-      } else {
+      } catch (error) {
+        console.error('비밀번호 재설정 에러:', error);
         this.passwordError = true;
+        this.modalMessage = '일치하는 회원 정보가 없습니다.';
+        this.modalButtonText = '확인';
+        this.showModal = true;
       }
     },
+
     closeModal() {
       this.showModal = false;
-      if (!this.isIdRecovery) this.$router.push('/auth/login');
+      if (!this.isIdRecovery && this.modalButtonText === '로그인 화면으로') {
+        this.$router.push('/auth/login');
+      }
     },
+
     clearFields() {
       this.name = '';
       this.phone = '';

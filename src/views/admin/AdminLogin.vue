@@ -2,7 +2,7 @@
 <template>
     <div class="admin-login-container">
       <div class="admin-login-box">
-        <img src="../assets/image/logo.png" alt="Logo" class="logo" />
+        <img src="../../assets/image/logo.png" alt="Logo" class="logo" />
         <h1>관리자 로그인</h1>
         <div class="input-group">
           <label for="employeeNumber">사번</label>
@@ -21,9 +21,11 @@
             id="password"
             v-model="password"
             placeholder="비밀번호를 입력하세요"
+            @keydown.enter="handleLogin"
           />
         </div>
-        <button @click="handleLogin" class="login-button">로그인</button>
+        <button  @click="handleLogin" class="login-button">로그인</button>
+        
         <p v-if="loginError" class="error-message">사번 또는 비밀번호를 확인해주세요.</p>
       </div>
     </div>

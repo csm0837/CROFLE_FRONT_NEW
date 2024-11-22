@@ -22,6 +22,7 @@
             </button>
           </div>
         </div>
+
         <!-- 기본 정보 입력 (일반회원/메이커 공통) -->
         <div v-else-if="step === 'basicForm'">
           <h2>
@@ -46,14 +47,26 @@
                 id="email"
                 v-model="email"
                 placeholder="이메일을 입력하세요"
+                :disabled="isEmailVerified"
                 required
               />
-              <button @click="sendEmailVerification" class="verify-button">
-                인증코드 보내기
+              <button
+                @click="
+                  isCodeSent ? verifyEmailCode() : sendEmailVerification()
+                "
+                class="verify-button"
+                :class="{ verified: isEmailVerified }"
+                :disabled="isEmailVerified"
+              >
+                {{ isCodeSent ? "인증하기" : "인증코드 보내기" }}
               </button>
             </div>
+            <p v-if="emailVerificationError" class="error-message">
+              {{ emailVerificationError }}
+            </p>
           </div>
-          <div class="input-group">
+
+          <div class="input-group" v-if="isCodeSent && !isEmailVerified">
             <label for="emailCode">인증코드</label>
             <input
               type="text"
@@ -63,6 +76,7 @@
               required
             />
           </div>
+
           <div class="input-group">
             <label for="nickname">닉네임</label>
             <input
@@ -73,6 +87,7 @@
               required
             />
           </div>
+
           <div class="input-group">
             <label for="phone">전화번호</label>
             <input
@@ -83,6 +98,7 @@
               required
             />
           </div>
+
           <div class="input-group">
             <label for="password">비밀번호</label>
             <input
@@ -93,6 +109,7 @@
               required
             />
           </div>
+
           <div class="input-group">
             <label for="confirmPassword">비밀번호 확인</label>
             <input
@@ -120,6 +137,7 @@
               </button>
             </div>
           </div>
+
           <div class="input-group">
             <label for="address">주소</label>
             <input
@@ -130,6 +148,7 @@
               required
             />
           </div>
+
           <div class="input-group">
             <label for="detailAddress">상세주소</label>
             <input
@@ -167,7 +186,7 @@
           </div>
 
           <button @click="nextStep" class="signup-button">
-            이메일로 시작하기
+            {{ isEmailVerified ? "다음" : "이메일 인증이 필요합니다" }}
           </button>
         </div>
 
@@ -185,6 +204,7 @@
               required
             />
           </div>
+
           <div class="input-group">
             <label>성별</label>
             <div class="gender-checkboxes">
@@ -198,6 +218,7 @@
               </label>
             </div>
           </div>
+
           <div class="input-group">
             <label>관심 분야</label>
             <div class="interest-categories">
@@ -214,6 +235,7 @@
               </div>
             </div>
           </div>
+
           <button @click="completeRegistration" class="signup-button">
             가입완료
           </button>
@@ -228,9 +250,19 @@
       </div>
     </div>
   </div>
+
+  <!-- 모달 창 -->
+  <div v-if="showModal" class="modal-overlay" @click="closeModal">
+    <div class="modal-content" @click.stop>
+      <p>{{ modalMessage }}</p>
+      <button @click="closeModal" class="modal-button">확인</button>
+    </div>
+  </div>
 </template>
 
 <script>
+import { authApi } from "@/api";
+
 export default {
   name: "SignUp",
   data() {
@@ -260,6 +292,12 @@ export default {
         "웨어러블",
         "주변 기기",
       ],
+      isEmailVerified: false, // 이메일 인증 완료 여부
+      isEmailDuplicate: false, // 이메일 중복 여부
+      isCodeSent: false, // 인증코드 발송 여부
+      emailVerificationError: "", // 이메일 관련 에러 메시지
+      showModal: false,
+      modalMessage: "",
     };
   },
   methods: {
@@ -268,69 +306,69 @@ export default {
       this.step = "basicForm";
     },
 
+    closeModal() {
+      this.showModal = false;
+      if (this.isEmailVerified) {
+        this.modalMessage = "";
+      }
+    },
+
     // 이메일 중복 체크 및 인증 코드 발송
     async sendEmailVerification() {
       if (!this.email) {
-        alert("이메일을 입력해주세요.");
+        this.emailVerificationError = "이메일을 입력해주세요.";
         return;
       }
 
       try {
         // 이메일 중복 체크
-        const checkResponse = await fetch(
-          `/api/auth/check-email?email=${this.email}`
-        );
-        const checkResult = await checkResponse.json();
-
-        if (checkResult.isDuplicate) {
-          alert("이미 사용 중인 이메일입니다.");
+        const checkResponse = await authApi.checkEmail(this.email);
+        if (checkResponse.data.isDuplicate) {
+          this.emailVerificationError = "이미 사용 중인 이메일입니다.";
           return;
         }
 
-        // 인증 메일 발송
-        const response = await fetch("/api/auth/send-verification", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: `email=${this.email}`,
-        });
-
-        const result = await response.json();
-        alert(result.message);
+        // 인증 코드 발송
+        const response = await authApi.sendVerificationCode(this.email);
+        this.isCodeSent = true;
+        this.showModal = true;
+        this.modalMessage = response.data.message;
       } catch (error) {
-        alert("인증 메일 발송에 실패했습니다.");
+        console.error("이메일 인증 에러:", error);
+        this.emailVerificationError =
+          "이메일 인증 처리 중 오류가 발생했습니다.";
       }
     },
 
-    // 인증 코드 확인
     async verifyEmailCode() {
       if (!this.emailCode) {
-        alert("인증 코드를 입력해주세요.");
-        return false;
+        this.emailVerificationError = "인증 코드를 입력해주세요.";
+        return;
       }
 
       try {
-        const response = await fetch("/api/auth/verify-code", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: `email=${this.email}&code=${this.emailCode}`,
-        });
-
-        const result = await response.json();
-        alert(result.message);
-        return result.verified;
+        const response = await authApi.verifyCode(this.email, this.emailCode);
+        if (response.data.verified) {
+          this.isEmailVerified = true;
+          this.showModal = true;
+          this.modalMessage = "이메일 인증이 완료되었습니다.";
+        } else {
+          this.emailVerificationError = "잘못된 인증 코드입니다.";
+        }
       } catch (error) {
-        alert("인증 코드 확인에 실패했습니다.");
-        return false;
+        console.error("인증 코드 확인 에러:", error);
+        this.emailVerificationError = "인증 코드 확인 중 오류가 발생했습니다.";
       }
     },
 
     // 다음 단계로 이동
     async nextStep() {
       // 필수 필드 검증
+      if (!this.isEmailVerified) {
+        this.emailVerificationError = "이메일 인증이 필요합니다.";
+        return;
+      }
+
       if (
         !this.email ||
         !this.nickname ||
@@ -341,12 +379,6 @@ export default {
         !this.address
       ) {
         alert("모든 필수 정보를 입력해주세요.");
-        return;
-      }
-
-      // 이메일 인증 확인
-      if (!(await this.verifyEmailCode())) {
-        alert("이메일 인증이 필요합니다.");
         return;
       }
 
@@ -377,10 +409,35 @@ export default {
 
     // 주소 API
     openAddressAPI() {
-      new daum.Postcode({
+      new window.daum.Postcode({
         oncomplete: (data) => {
+          // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분
           this.postcode = data.zonecode;
-          this.address = data.address;
+          this.address = data.roadAddress || data.jibunAddress;
+
+          // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+          if (data.userSelectedType === "R") {
+            // 법정동명이 있을 경우 추가한다.
+            let extraAddr = "";
+            if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
+              extraAddr += data.bname;
+            }
+            // 건물명이 있고, 공동주택일 경우 추가한다.
+            if (data.buildingName !== "" && data.apartment === "Y") {
+              extraAddr +=
+                extraAddr !== "" ? ", " + data.buildingName : data.buildingName;
+            }
+            // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+            if (extraAddr !== "") {
+              extraAddr = " (" + extraAddr + ")";
+              this.address += extraAddr;
+            }
+          }
+
+          // 상세주소 필드에 포커스
+          this.$nextTick(() => {
+            document.getElementById("detailAddress").focus();
+          });
         },
       }).open();
     },
@@ -439,65 +496,52 @@ export default {
 
     // 회원가입 완료
     async completeRegistration() {
-      try {
+    try {
         const commonData = {
-          email: this.email,
-          password: this.password,
-          name: this.nickname,
-          nickname: this.nickname,
-          phone: this.phone,
-          zipcode: parseInt(this.postcode),
-          address: this.address,
-          detailAddress: this.detailAddress,
-          loginMethod: false, // 일반 회원가입
-          notification: true, // 기본값
+            email: this.email,
+            password: this.password,
+            name: this.nickname,
+            nickname: this.nickname,
+            phone: this.phone,
+            zipcode: parseInt(this.postcode),
+            address: this.address,
+            detailAddress: this.detailAddress,
+            loginMethod: false,
+            notification: true
         };
 
         if (this.userType === "user") {
-          const userData = {
-            ...commonData,
-            gender: this.gender === "male",
-            birth: this.birthdate,
-            categoryIds: this.mapCategoriesToIds(this.interest),
-          };
+            const userData = {
+                ...commonData,
+                gender: this.gender === "male",
+                birth: this.birthdate,
+                categoryIds: this.mapCategoriesToIds(this.interest)
+            };
 
-          const response = await fetch("/api/auth/signup/user", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(userData),
-          });
-
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message);
-          }
+            await authApi.registerUser(userData);
         } else {
-          const makerData = {
-            ...commonData,
-            business: this.businessNumber,
-          };
+            const makerData = {
+                ...commonData,
+                business: this.businessNumber
+            };
 
-          const response = await fetch("/api/auth/signup/maker", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(makerData),
-          });
-
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message);
-          }
+            await authApi.registerMaker(makerData);
         }
 
         this.step = "complete";
-      } catch (error) {
-        alert("회원가입에 실패했습니다: " + error.message);
-      }
-    },
+        
+    } catch (error) {
+        console.error('회원가입 에러:', error.response?.data || error);
+        
+        let errorMessage = "회원가입에 실패했습니다.";
+        if (error.response?.data?.message) {
+            errorMessage = error.response.data.message;
+        }
+        
+        this.showModal = true;
+        this.modalMessage = errorMessage;
+    }
+},
 
     // 로그인 페이지로 이동
     goToLogin() {
@@ -515,6 +559,43 @@ export default {
   background-color: #ffffff;
   position: relative;
   padding: 2rem 0;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.verify-button.verified {
+  background-color: #28a745;
+  cursor: not-allowed;
 }
 
 .back-button {
@@ -742,5 +823,19 @@ h2 {
     width: 100%;
     max-width: 200px;
   }
+}
+
+.verify-button.verified {
+  background-color: #28a745;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+.signup-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 </style>

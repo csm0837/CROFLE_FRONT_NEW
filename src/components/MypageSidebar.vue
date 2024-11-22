@@ -20,6 +20,8 @@
 
 
         <!-- 판매자용 하위 기능 -->
+
+   
         <template v-if="userType === 'seller'">
           <li :class="{ active: isActive('/mypage/funding-status') }">
             <router-link to="/mypage/funding-status">펀딩 진행 목록</router-link>
@@ -32,6 +34,8 @@
         
         <!-- 구매자용 하위 기능 -->
         <template v-else-if="userType === 'buyer'">
+          
+          
           <li :class="{ active: isActive('/mypage/funding-participation') }">
             <router-link to="/mypage/funding-participation">펀딩 참여 목록</router-link>
           </li>
@@ -48,6 +52,11 @@
 </template>
 
 <script>
+import { ref } from 'vue';
+import axios from 'axios';
+
+const message = ref("");
+
 export default {
   name: 'MypageSidebar',
   data() {
@@ -73,6 +82,13 @@ export default {
     window.removeEventListener('storage', this.loadUserType);
   },
 };
+
+
+
+axios.get(import.meta.VITE_API_URL).then((response) => {
+  console.log(response.data);
+  message.value = response.data.category;
+});
 </script>
 
 <style scoped>
